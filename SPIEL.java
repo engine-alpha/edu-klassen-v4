@@ -37,7 +37,7 @@ extends Spiel
      */
     private int zaehler;
     
-    private EduActor hintergrundbild;
+    private Figur hintergrundbild;
     
     
     
@@ -103,34 +103,22 @@ extends Spiel
     }
     
     
-    // /**
-     // * Setzt eine Hintergrundgrafik fuer das Spiel. Dieses Bild liegt immer hinter allen anderen Objekten. 
-     // * 
-     // * @param   pfad    Der Pfad der Bilddatei (jpg, bmp, png) des Bildes,
-     // *                  das benutzt werden soll. ZB: "hintergrund.jpg"
-     // */
-    // public void setzeHintergrundgrafik( String pfad ) 
-    // {
-        // if ( this.hintergrundbild != null )
-        // {
-            // this.hintergrundbild.setzeSichtbar( false );
-        // }
-        // this.hintergrundbild = new Figur ( "hintergrund" , pfad , 1 , 1 );
-        // // ToDo --- HINTERGRUND und VORDERGUND als Konstanten
-        // this.hintergrundbild.getActor().setLayer( -1 );
-        // this.hintergrundbild.setzeSichtbar( true );
-    // }
-    
-    
     /**
-     * Setzt die Gruesse des Fensters fuer die Grafik-Anzeige neu (im laufenden Betrieb).
-     *
-     * @param   breite  neue Breite des Fensters in Pixel 
-     * @param   hoehe   neue Hoehe des Fensters in Pixel 
+     * Setzt eine Hintergrundgrafik fuer das Spiel. Dieses Bild liegt immer hinter allen anderen Objekten. 
+     * 
+     * @param   pfad    Der Pfad der Bilddatei (jpg, bmp, png) des Bildes,
+     *                  das benutzt werden soll. ZB: "hintergrund.jpg"
      */
-    public static void setzeFensterGroesse(int breite, int hoehe)
+    public void setzeHintergrundgrafik( String pfad ) 
     {
-        Spiel.setzeFensterGroesse( breite , hoehe );
+        if ( this.hintergrundbild != null )
+        {
+            this.hintergrundbild.setzeSichtbar( false );
+        }
+        this.hintergrundbild = new Figur ( "hintergrund" , pfad , 1 , 1 );
+        // ToDo --- HINTERGRUND und VORDERGUND als Konstanten
+        this.hintergrundbild.getActor().setLayer( -1 );
+        this.hintergrundbild.setzeSichtbar( true );
     }
     
     
@@ -151,6 +139,9 @@ extends Spiel
         // // TODO
         // //ea.edu.FensterE.getFenster().mausAnmelden( new Maus( new Bild(0,0,pfad) , new Punkt(hotspotX,hotspotY) ) , true );
     // }
+    
+    
+    
     
     
     // ===  T i c k e r  ===
@@ -191,6 +182,8 @@ extends Spiel
     {
         super.tickerAnmelden( this , ms );
     }
+    
+    
     
     
     
@@ -240,6 +233,8 @@ extends Spiel
     {
         System.out.println( "Taste mit Kuerzel " + taste + " wurde gedrueckt" );
     }
+    
+    
     
     
     
@@ -294,6 +289,8 @@ extends Spiel
     {
         return ea.Game.isKeyPressed( taste );
     }
+    
+    
     
     
     
@@ -363,6 +360,8 @@ extends Spiel
     
     
     
+    
+    
     // ===  S z e n e n  ===
     
     // /**
@@ -396,6 +395,8 @@ extends Spiel
     
     
     
+    
+    
     // ===  D e b u g  ===
     
     /**
@@ -407,6 +408,8 @@ extends Spiel
     {
         ea.Game.setDebug( anzeigen );
     }
+    
+    
     
     
     
