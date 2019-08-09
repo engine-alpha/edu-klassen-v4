@@ -1,21 +1,9 @@
-/** @author     mike ganshorn
+/** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2018-08-06)
+ *  @Version    4.0 (2019-08-06)
  *  
  *  @changelog  4.0 Umstieg auf EA 4
  *  
- *              2.4 WECHSELBILD erbt von Knoten und damit von Raum
- *                  verschiebenUm greift auf bewegen zurueck
- *                  Methoden in allen Klassen vereinheitlicht (bis auf indiv. Methoden)
- *  
- *              2.3 Methode beruehrt(WECHSELBILD) hinzugefuegt
- *  
- *              2.2 Jump'n'Run-Physik hinzu gefuegt.
- *  
- *              2.1 keine Abhaengigkeit mehr zwischen den alpha-Formen
- *                  Der Mittelpunkt des Dreiecks ist hier der Mittelpunkt des umhuellenden Rechtecks !!!
- * 
- *              
 */
 
 import ea.edu.Dreieck;
@@ -25,7 +13,7 @@ import ea.edu.EduActor;
  * Diese Klasse stellt ein einfaches Dreieck dar.
  */
 public class DREIECK
-implements EduActor
+extends Dreieck
 {
     
     /**
@@ -46,42 +34,42 @@ implements EduActor
     /**
      * x-Koordinate des Eckpunkts A
      */
-    private float A_x;
+    private double A_x;
     
     /**
      * y-Koordinate des Eckpunkts A
      */
-    private float A_y;
+    private double A_y;
     
     /**
      * x-Koordinate des Eckpunkts B
      */
-    private float B_x;
+    private double B_x;
     
     /**
      * y-Koordinate des Eckpunkts B
      */
-    private float B_y;
+    private double B_y;
     
     /**
      * x-Koordinate des Eckpunkts C
      */
-    private float C_x;
+    private double C_x;
     
     /**
      * y-Koordinate des Eckpunkts C
      */
-    private float C_y;
+    private double C_y;
     
      /**
      * x-Koordinate des Mittelpunkts des umschliessenden Rechtecks
      */
-    private float M_x;
+    private double M_x;
     
     /**
      * y-Koordinate des Mittelpunkts des umschliessenden Rechtecks
      */
-    private float M_y;
+    private double M_y;
     
     
     /**
@@ -89,7 +77,7 @@ implements EduActor
      */
     public DREIECK() 
     {
-        this( 80 , 190 , 150 , 70 , 220 , 190 );
+        this( 3 , 6 , 5 , 2 , 7 , 6 );
     }
     
     
@@ -104,21 +92,21 @@ implements EduActor
      * @param   Cx  Die x-Koordinate der dritten Ecke
      * @param   Cy  Die y-Koordinate der dritten Ecke
      */
-    public DREIECK( float Ax , float Ay , float Bx , float By , float Cx , float Cy ) 
+    public DREIECK( double Ax , double Ay , double Bx , double By , double Cx , double Cy ) 
     {
-        this.dreieck = new Dreieck( Ax , Ay , Bx , By , Cx , Cy );
+        super( Ax , Ay , Bx , By , Cx , Cy );
         this.A_x = Ax;
         this.A_y = Ay;
         this.B_x = Bx;
         this.B_y = By;
         this.C_x = Cx;
-        this.C_y = 50;
+        this.C_y = Cy;
         this.M_x = ( Math.min(Math.min(Ax,Bx),Cx) + Math.max(Math.max(Ax,Bx),Cx) ) / 2 ;
         this.M_y = ( Math.min(Math.min(Ay,By),Cy) + Math.max(Math.max(Ay,By),Cy) ) / 2 ;
         this.sichtbar = true;
-        this.dreieck.setzeSichtbar( true);
+        super.setzeSichtbar( true);
         this.farbe = "Gruen";
-        this.dreieck.setzeFarbe( this.farbe );
+        super.setzeFarbe( this.farbe );
     }
     
     
@@ -126,12 +114,13 @@ implements EduActor
      * Legt die Ebene fest, in der das Objekt gezeichnet wird. 
      * Ebenen mit grossen Nummern ueberdecken Ebenen mit kleineren Nummern. 
      * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt. 
+     * 
      *
      * @param   ebenenNummer    -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) ; 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
     public void setzeEbene( int ebenenNummer )
     {
-        this.dreieck.setLayer( ebenenNummer );
+        super.getActor().setLayerPosition( ebenenNummer );
     }
     
     
@@ -145,9 +134,10 @@ implements EduActor
      * @param   Cx  Die X-Koordinate des Punktes C
      * @param   Cy  Die Y-Koordinate des Punktes C
      */
-    public void setzeEcken( float Ax , float Ay , float Bx , float By , float Cx , float Cy ) 
+    public void setzeEcken( double Ax , double Ay , double Bx , double By , double Cx , double Cy ) 
     {
-        this.dreieck.entfernen();
+        //this.dreieck.entfernen();
+        //super.setzeEcken( Ax , Ay , Bx , By , Cx , Cy );
         this.A_x = Ax;
         this.A_y = Ay;
         this.B_x = Bx;
@@ -156,20 +146,23 @@ implements EduActor
         this.C_y = Cy;
         this.M_x = ( Math.min(Math.min(Ax,Bx),Cx) + Math.max(Math.max(Ax,Bx),Cx) ) / 2 ;
         this.M_y = ( Math.min(Math.min(Ay,By),Cy) + Math.max(Math.max(Ay,By),Cy) ) / 2 ;
-        dreieck = new Dreieck( Ax , Ay , Bx , By , Cx , Cy );
-        dreieck.setzeFarbe( this.farbe );
+        //dreieck = new Dreieck( Ax , Ay , Bx , By , Cx , Cy );
+        //dreieck.setzeFarbe( this.farbe );
+        
+        ea.Vector[] points = {new ea.Vector(Ax, Ay), new ea.Vector(Bx, By), new ea.Vector(Cx, Cy)};
+        ((ea.actor.Polygon)getActor()).resetPoints(points);
     }
     
     
     /**
      * Setzt die Farbe dieses Dreiecks neu.
      * 
-     * @param   farbeNeu    Diese Farbe erhaelt das Dreieck (z.B. "Rot")
+     * @param   farbeNeu    Diese Farbe erhaelt das Dreieck (z.B. "Rot"). 
      */
     public void setzeFarbe( String farbeNeu ) 
     {
         this.farbe = farbeNeu;
-        this.dreieck.setzeFarbe( this.farbe );
+        super.setzeFarbe( this.farbe );
     }
     
     
@@ -184,10 +177,10 @@ implements EduActor
      * 
      * @param   y Die Y-Koordinate des neuen Mittelpunktes
      */
-    public void setzeMittelpunkt( float x , float y ) 
+    public void setzeMittelpunkt( double x , double y ) 
     {
-        float deltaX = x - this.M_x;
-        float deltaY = y - this.M_y;
+        double deltaX = x - this.M_x;
+        double deltaY = y - this.M_y;
         this.A_x = this.A_x + deltaX;
         this.A_y = this.A_y + deltaY;
         this.B_x = this.B_x + deltaX;
@@ -196,7 +189,7 @@ implements EduActor
         this.C_y = this.C_y + deltaY;
         this.M_x = x;
         this.M_y = y;
-        this.dreieck.setzeMittelpunkt( x , y );
+        super.setzeMittelpunkt( x , y );
     }
     
     
@@ -210,18 +203,20 @@ implements EduActor
     public void setzeSichtbar( boolean sichtbarNeu ) 
     {
         this.sichtbar = sichtbarNeu;
-        this.dreieck.setzeSichtbar( sichtbarNeu );
+        super.setzeSichtbar( sichtbarNeu );
     }
     
     
     /**
-     * Verschiebt dieses Dreieck um eine Verschiebung - angegeben durch ein "Delta X" und "Delta Y".
+     * Verschiebt dieses Dreieck um eine gewisse Strecke - angegeben durch ein "Delta X" und "Delta Y" (in Bildschirm-Metern).
      * 
-     * @param   deltaX  Der X Anteil dieser Verschiebung. Positive Werte verschieben nach rechts, negative nach links.
+     * @param   deltaX      Der X Anteil dieser Verschiebung (in Bildschirm-Metern). 
+     *                      Positive Werte verschieben nach rechts, negative nach links.
      * 
-     * @param   deltaY  Der Y Anteil dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
+     * @param   deltaY      Der Y Anteil dieser Verschiebung (in Bildschirm-Metern). 
+     *                      Positive Werte verschieben nach oben, negative nach unten.
      */
-    public void verschiebenUm( float deltaX , float deltaY ) 
+    public void verschiebenUm( double deltaX , double deltaY ) 
     {
         this.A_x = this.A_x + deltaX;
         this.A_y = this.A_y + deltaY;
@@ -231,33 +226,33 @@ implements EduActor
         this.C_y = this.C_y + deltaY;
         this.M_x = this.M_x + deltaX;
         this.M_y = this.M_y + deltaY;
-        this.dreieck.verschieben( deltaX , deltaY );
+        super.verschieben( deltaX , deltaY );
     }
     
     
     /**
      * Testet, ob ein anderes Grafik-Objekt beruehrt wird.
      *
-     * @param   r   Ein anderes BILD, RECHTECK, KREIS, DREIECK, ...
+     * @param   ea   Ein anderer EduActor, z.B. FIGUR, RECHTECK, KREIS, DREIECK, ...
      * 
      * @return  true, wenn sich die beiden Objekte ueberschneiden
      */
     public boolean beruehrt( EduActor ea ) 
     {
-        return this.dreieck.schneidet( ea.getActor() );
+        return super.schneidet( ea );
     }
     
     
     /**
      * Methode beinhaltetPunkt
      *
-     * @param   x   x-Koordinate des Punkts (Pixel)
-     * @param   y   x-Koordinate des Punkts (Pixel)
+     * @param   x   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * @param   y   x-Koordinate des Punkts (in Bildschirm-Metern)
      * @return      true, wenn Punkt innerhalb der Grafik
      */
-    public boolean beinhaltetPunkt( float x , float y ) 
+    public boolean beinhaltetPunkt( double x , double y ) 
     {
-        return this.dreieck.beinhaltetPunkt( x , y );
+        return super.beinhaltetPunkt( x , y );
     }
     
     
@@ -265,32 +260,33 @@ implements EduActor
      * Nennt die Nummer der Ebene, in der dieses Objekt derzeit gezeichnet wird. 
      * Durch veraendern der Ebenen-Nummer kann man Objekte vor / hinter andere stellen. 
      * Ebenen mit groesserer Nummer verdecken Ebenen mit kleinerer Nummer.
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @return  Ebenen-Nummer: -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) , 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
-    public int nenneEbene()
+    public int nenneEbenenposition()
     {
-        return this.dreieck.getLayer();
+        return super.nenneEbenenposition();
     }
     
     
     /**
-     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Dreiecks zurueck.
+     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Dreiecks (in Bildschrim-Metern) zurueck.
      * 
-     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Dreiecks
+     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Dreiecks (in Bildschrim-Metern)
      */
-    public float nenneMx()
+    public double nenneMx()
     {
         return this.M_x;
     }
     
     
     /**
-     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Kreises zurueck.
+     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Dreiecks (in Bildschrim-Metern) zurueck.
      * 
-     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Kreises
+     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Dreiecks (in Bildschrim-Metern)
      */
-    public float nenneMy()
+    public double nenneMy()
     {
         return this.M_y;
     }
@@ -319,88 +315,73 @@ implements EduActor
     
     
     /**
-     * Diese Methode prueft, wie weit der Mittelpunkt dieses Rechtecks vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in x-Richtung entfernt ist.
+     * Diese Methode prueft, wie weit der Mittelpunkt dieses Dreiecks vom Mittelpunkt 
+     * eines anderen Grafik-Objekts in x-Richtung (in Bildschrim-Metern) entfernt ist.
      * 
      * @param   grafikObjekt    Das andere Grafik-Objekt
      * 
-     * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in x-Richtung (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Bildschrim-Metern) dieses Dreiecks vom anderen Grafik-Objekt in x-Richtung (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandX( EduActor ea )
+    public double berechneAbstandX( EduActor ea )
     {
-        return  this.M_x - ea.mittelPunkt().x ;
+        return  this.M_x - ea.nenneMittelpunktX() ;
     }
     
     
     /**
      * Diese Methode prueft, wie weit der Mittelpunkt dieses Dreiecks vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in y-Richtung entfernt ist.
+     * eines anderen Grafik-Objekts in y-Richtung (in Bildschrim-Metern) entfernt ist.
      * 
      * @param   grafikObjekt    Das andere Grafik-Objekt
      * 
-     * @return  Abstand (in Pixeln) dieses Dreiecks vom anderen Grafik-Objekt in y-Richtung (>0, wenn dieses Dreieck unterhalb des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Bildschrim-Metern) dieses Dreiecks vom anderen Grafik-Objekt in y-Richtung (>0, wenn dieses Dreieck unterhalb des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandY( EduActor ea )
+    public double berechneAbstandY( EduActor ea )
     {
-        return  this.M_y - ea.mittelPunkt().y;
+        return  this.M_y - ea.nenneMittelpunktY();
     }
     
     
     /**
-     * Dreht die Grafik um einen Winkel
+     * Dreht die Grafik um einen Winkel (in Grad). 
      *
-     * @param   winkelAenderung     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     * @param   winkelInGrad        +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void drehenUm( float winkelAenderung )
+    public void drehenUm( double winkelInGrad )
     {
-        float x = this.dreieck.nenneMx();
-        float y = this.dreieck.nenneMy();
-        this.dreieck.setzeSichtbar( false );
-        this.dreieck.drehen( (float)Math.toRadians(winkelAenderung)  );
-        this.dreieck.setzeMittelpunkt( x , y );
-        this.dreieck.setzeSichtbar( true );
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
+        super.setzeSichtbar( false );
+        super.drehen( winkelInGrad );
+        super.setzeMittelpunkt( x , y );
+        super.setzeSichtbar( true );
     }
     
     
     /**
-     * Setzt den Drehwinkel auf eine absoluten neuen Wert
+     * Setzt den Drehwinkel (in Grad) auf eine absoluten neuen Wert. 
      *
-     * @param   neuerDrehwinkel     der neue Drehwinkel
-     *                              +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
-     *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
+     * @param   neuerDrehwinkelInGrad     der neue Drehwinkel
+     *                                    +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     *                                    -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkel )
+    public void setzeDrehwinkel( double neuerDrehwinkelInGrad )
     {
-        this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
+        this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
     }
     
     
     /**
-     * Nennt den Winkel, um den die Grafik gedreht wurde
+     * Nennt den Winkel (in Grad), um den die Grafik gedreht wurde. 
      *
-     * @return      der Winkel, um den die Grafik gedreht wurde
+     * @return      der Winkel (in Grad), um den die Grafik gedreht wurde
      *              0: wenn nicht gedreht
      *              +: wenn mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *              -: wenn mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public float nenneDrehwinkel()
+    public double nenneDrehwinkel()
     {
-        return (float)Math.toDegrees( this.dreieck.nenneWinkel() );
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    @Override
-    /**
-     * Methode des Interfaces 'GrafikObjekt'
-     */
-    public ea.actor.Actor getActor() {
-        return this.dreieck;
+        return super.nenneDrehwinkel();
     }
 }

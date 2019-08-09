@@ -2,36 +2,29 @@ import ea.edu.*;
 import ea.actor.Actor;
 import ea.edu.EduActor;
 
+import ea.edu.event.*;
+
 /**
- * Die Klasse SPIEL ist ein Template, das so wie es ist an Schueler ausgegeben werden kann.
- * (Einzige Voraussetzung ist, dass die engine-alpha-Bibliothek im Suchpfad erreichbar ist.)
- * Es startet alles Notwendige fuer ein Spiel.
+ * Die Klasse SPIEL ist ein Template. Es startet alles Notwendige fuer ein Spiel.
+ * (Einzige Voraussetzung ist, dass die Engine-Alpha-Bibliothek im Suchpfad erreichbar ist.)
  * 
- * Beim Konstruktor ohne Parameter gibt es keine Maus-Interaktion.
- * Die Methoden tick() und tasteReagieren() werden immer automatisch aufgerufen.
- * 
- * Beim Konstruktor mit Parameter kann Maus-Interaktion eingeschaltet werden.
+ * Es gibt Tastatur-Ereignisse, Maus-Ereignisse, Timer-Events und Frame-Update-Events.
  * 
  * 
- * @author      Michael Andonie und Mike Ganshorn  (nach Idee von Bendikt Lindemann)
+ * @author      Michael Andonie und Mike Ganshorn
  * 
- * 
- * @version     4.0 (2018-08-06)
- * 
+ * @version     4.0 (2019-08-07)
  * 
  * @changelog   4.0 Umstieg auf EA 4
  * 
- *              2.3 Ticker startet NICHT mehr automatisch !!!
- *                  Methoden-Signaturen "geglaettet"
- *                  neue Konstruktoren
- *                  Methode tasteGedrueckt( int taste )
+ *              Ticker startet NICHT mehr automatisch !!!
+ *                  
  * 
  */
 public class SPIEL 
 extends Spiel 
+implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, BildAktualisierungReagierbar
 {
-
-    
     /**
      * Dieser Zaehler ermoeglicht den Tik-Tak-Wechsel.
      */
@@ -40,10 +33,11 @@ extends Spiel
     private Figur hintergrundbild;
     
     
+    // =====   K o n s t r u k t o r e n   =========================================================
     
     /**
-     * Erstellt ein einfaches Spiel: Breite 800 , Hoehe 600 , ohne Punktestand und Maus. <br /> 
-     * Ueberschreibe bei Bedarf die Methoden tick() bzw. tasteReagieren(int taste).
+     * Erstellt ein einfaches Spiel: 800 x 600 Pixel , ohne Punktestand und Maus. <br /> 
+     * Ueberschreibe bei Bedarf die Methoden tick(), tasteReagieren(int taste), mausKlickReagieren(double x, double y), ....
      */
     public SPIEL() 
     {
@@ -51,37 +45,20 @@ extends Spiel
     }
     
     
-    
     /**
-     * SPIEL Konstruktor mit allen Moeglichkeiten <br /> 
-     * Ueberschreibe bei Bedarf die Methoden tick() bzw. tasteReagieren(int taste).
-     *                          
-     * @param   fensterBreite   in Pixel
-     * @param   fensterHoehe    in Pixel
-     * @param   maus            true  : man sieht den Mauszeiger  (Klick-Spiel) 
-     *                          false : man sieht ihn nicht       (reines Tastatur-Spiel)
+     * SPIEL Konstruktor ohne Maus.
+     *
+     * @param   fensterHoehe    Hoehe des Fensters in Pixeln
+     * @param   fensterBreite   Breite des Fensters in Pixeln
      */
-    public SPIEL( int fensterBreite, int fensterHoehe, boolean maus ) 
+    public SPIEL( int fensterHoehe , int fensterBreite )
     {
-        setzeFensterGroesse(fensterBreite, fensterHoehe);
-        
-        //Zaehler fuer Tick, Tack, ...
-        zaehler = 0;
-        
-        //Maus ggf. aktivieren
-        if ( maus ) 
-        {
-            klickReagierbarAnmelden( this , true );
-        }
-        
-        //Tastatur
-        tastenReagierbarAnmelden( this );
-        
+        this( fensterHoehe , fensterBreite , false );
     }
     
     
     /**
-     * SPIEL Konstruktor 800 x 600
+     * SPIEL Konstruktor 800 x 600 Pixel mit Mausunterstuetzung.
      *
      * @param   maus        'true' mit Maus , 'false' ohne Maus
      */
@@ -92,22 +69,40 @@ extends Spiel
     
     
     /**
-     * SPIEL Konstruktor ohne Maus.
-     *
-     * @param   x   Ein Parameter
-     * @param   y   Ein Parameter
+     * SPIEL Konstruktor mit allen Moeglichkeiten <br /> .
+     * Ueberschreibe bei Bedarf die Methoden tick() bzw. tasteReagieren(int taste).
+     *                          
+     * @param   fensterBreite   in Pixel
+     * @param   fensterHoehe    in Pixel
+     * @param   maus            true  : man sieht den Mauszeiger  (Klick-Spiel) 
+     *                          false : man sieht ihn nicht       (reines Tastatur-Spiel)
      */
-    public SPIEL( int x , int y )
+    public SPIEL( int fensterBreite, int fensterHoehe, boolean maus ) 
     {
-        this( x , y , false );
+        setzeFensterGroesse(fensterBreite, fensterHoehe);
+        //Zaehler fuer Tick, Tack, ...
+        zaehler = 0;
+        //Maus ggf. aktivieren
+        if ( maus ) 
+        {
+            registriereMausKlickReagierbar( this );
+            registriereMausRadReagierbar(this);
+        }
+        //Tastatur
+        registriereTastenReagierbar( this );
+        //Frame-Updates
+        registriereBildAktualisierungReagierbar(this);
     }
     
+    
+    
+    // =====   G e s t a l t e n   d e s   S p i e l f e l d e s  =========================================
     
     /**
      * Setzt eine Hintergrundgrafik fuer das Spiel. Dieses Bild liegt immer hinter allen anderen Objekten. 
      * 
      * @param   pfad    Der Pfad der Bilddatei (jpg, bmp, png) des Bildes,
-     *                  das benutzt werden soll. ZB: "hintergrund.jpg"
+     *                  das benutzt werden soll. zB: "hintergrund.jpg"
      */
     public void setzeHintergrundgrafik( String pfad ) 
     {
@@ -116,172 +111,181 @@ extends Spiel
             this.hintergrundbild.setzeSichtbar( false );
         }
         this.hintergrundbild = new Figur ( "hintergrund" , pfad , 1 , 1 );
-        // ToDo --- HINTERGRUND und VORDERGUND als Konstanten
-        this.hintergrundbild.getActor().setLayer( -1 );
+        this.hintergrundbild.setzeEbenenposition( -1 );
+        this.hintergrundbild.setzeMittelpunkt( 0 , 0 );
         this.hintergrundbild.setzeSichtbar( true );
     }
     
     
-    // /**
-     // * Setzt ein neues Maus-Icon.
-     // * 
-     // * @param   pfad        Der Pfad zu dem Bild (jpg, bmp, png), das 
-     // *                      das neue Maus-Icon werden soll. ZB: "mausicon.png"
-     // *                      
-     // * @param   hotspotX    Die X-Koordinate des Hotspots fuer das neue
-     // *                      Maus-Icon. (relativ im Icon)
-     // *                      
-     // * @param   hotspotY    Die Y-Koordinate des Hotspots fuer das neue
-     // *                      Maus-Icon. (relativ im Icon)
-     // */
-    // public void setzeMausIcon( String pfad , int hotspotX , int hotspotY ) 
-    // {
-        // // TODO
-        // //ea.edu.FensterE.getFenster().mausAnmelden( new Maus( new Bild(0,0,pfad) , new Punkt(hotspotX,hotspotY) ) , true );
-    // }
     
     
-    
-    
-    
-    // ===  T i c k e r  ===
+    // =====    G r a f i s c h e s   D e b u g g i n g     ==============================================
     
     /**
-     * Setzt das Ticker-Intervall.
-     * 
-     * @param   ms  Die Zeit in Millisekunden zwischen zwei
-     *              Aufrufen der <code>tick()</code>-Methode.
+     * Blendet das Koordinaten-System ein/aus und zeigt/versteckt die Collider der Grafik-Objekte
+     *
+     * @param   anzeigen    einblenden = true ;  ausblenden = false
      */
-    public void tickerIntervallSetzen( int ms ) 
+    public static void zeigeKoordinatensystem( boolean anzeigen )
     {
-        super.tickerAnmelden( this , ms );
+        ea.Game.setDebug( anzeigen );
     }
     
     
     /**
-     * Stoppt die Ticker-Funktion. Die <code>tick()</code>-Methode
-     * wird nicht weiter aufgerufen. Der automatische Aufruf der 
-     * <code>tick()</code>-Methode kann durch die Methode 
-     * <code>tickerNeuStarten(int ms)</code> wiedergestartet werden.
+     * Methode zum Verschieben der Kamera durch die Pfeiltasten 
+     * und zum Zoomen durch das Mausrad
      * 
-     * @see     #tickerNeuStarten(int)
+     * @param   erkunden    einschalten: true ,  ausschalten: false
      */
-    public void tickerStoppen() 
+    public void setzeErkundungsModus( boolean erkunden )
     {
-        super.tickerAbmelden( this );
-    }
-    
-    
-    /**
-     * Startet den Ticker neu.
-     * 
-     * @param   ms      Die Zeit in Millisekunden zwischen zwei
-     *                  Aufrufen der <code>tick()</code>-Methode. 
-     */
-    public void tickerNeuStarten( int ms ) 
-    {
-        super.tickerAnmelden( this , ms );
+        this.setzeErkundungsModus( erkunden );
     }
     
     
     
     
     
-    // ===  M e t h o d e n   z u m   U e b e s c h r e i b e n  ===
+    // =====    T o o l s    ==========================================================================
     
     /**
-     * Wird regelmaessig automatisch aufgerufen. So kommt Bewegung ins Spiel! 
-     * Tick-Intervall kann angepasst werden. Ticker muss erst gestartet werden.
-     */
-    public void tick() 
-    {
-        //Einfache Bildschirmausgabe. Kann spaeter in Subklasse beliebig ueberschreiben werden.
-        zaehler++;
-        zaehler = zaehler % 2;
-        if ( zaehler == 1 ) 
-        {
-            System.out.println( "Tick!" );
-        }
-        else 
-        {
-            System.out.println( "Tack!" );
-        }
-    }
-    
-
-    /**
-     * Wird bei jedem Mausklick (Linksklick) automatisch aufgerufen.
-     * 
-     * @param   x   Die X-Koordinate des Klicks
-     * 
-     * @param   y   Die Y-Koordinate des Klicks
-     */
-    public void klickReagieren( int x , int y ) 
-    {
-        //Einfache Bildschirmausgabe. Kann spaeter in Subklasse beliebig ueberschrieben werden.
-        System.out.println( "Klick bei (" + x  + ", " + y + ")." );
-    }
-    
-    
-    /**
-     * Wird bei jedem Tastendruck automatisch aufgerufen und automatisch das Kuerzel der entsprechenden Taste mitgegeben.
-     * 
-     * @param   taste   ganzzahliges Kuerzel der Taste (Farben_Tastencode.pdf) 
-     *                  oder ENUM-Typ aus Klasse TASTE (darin die Klassen-Doku lesen)
-     */
-    public void tasteReagieren( int taste ) 
-    {
-        System.out.println( "Taste mit Kuerzel " + taste + " wurde gedrueckt" );
-    }
-    
-    
-    
-    
-    
-    
-    // ===  T o o l s  ===
-    
-    /**
-     * Gibt eine Zufallszahl aus.
+     * Gibt eine ganzzahlige Zufallszahl aus.
      * 
      * @param von   Die Untergrenze der Zufallszahl (INKLUSIVE)
-     * 
      * @param bis   Die Obergrenze der Zufallszahl (INKLUSIVE)
      * 
      * @return      Eine Zufallszahl z mit:   von <= z <= bis
      */
-    public int zufallszahlVonBis( int von , int bis ) 
+    public static int zufallszahlVonBis( int von , int bis ) 
     {
         return ea.Random.nextInteger( bis - von ) + von;
     }
     
     
     /**
-     * Wartet um die Angegebene Anzahl an Millisekunden <b>BLOCKIEREND</b> bis zur Ausfuehrung des naechsten Befehls. 
-     * <b>!!! VORSICHT !!!</b> Innerhlab der Methode tick() <b>NICHT</b>  verwenden !!! 
-     * (ausser es ist sicher gestellt, dass die Summe aller 'warte-Millisekunden' <b>KUERZER</b> ist als ein Tick-Intervall)
+     * Wartet um die Angegebene Anzahl an Millisekunden BLOCKIEREND bis zur Ausfuehrung des naechsten Befehls. 
+     * 
+     * <b> !!! V O R S I C H T !!!  Nur verwenden bei reiner Grafik ohne Engine-Alpha Automatismen !!! <br />
+     * 
+     * Geht NICHT mit tick(), tasteReagieren(...), mausReagieren(...), ... !!! </b>
      *
-     * @param   ms      Die zu wartende Zeit in Millisekunden
+     * @param   sekunden      Die zu wartende Zeit in Sekunden
      */
-    public void warte( int ms )
+    public static void warte( double sekunden )
     {
-        try
-        {
-            Thread.sleep( ms );
-        }
-        catch ( InterruptedException e )
-        {
-            e.printStackTrace();
-        }
+        try{ Thread.sleep( (int)(1.0f*sekunden/1000) ); }
+        catch ( InterruptedException e ) { e.printStackTrace(); }
+    }
+    
+    
+    
+    
+    
+    // =====   T i c k e r   a n p a s s e n   ===========================================================
+    
+    /**
+     * Setzt das Ticker-Intervall.
+     * 
+     * @param   sekunden    Die Zeit in Sekunden zwischen zwei Aufrufen der tick()-Methode.
+     * 
+     * @see     #tickerNeuStarten(double)
+     * @see     #tickerStoppen(double)
+     * @see     #tick()
+     */
+    public void tickerIntervallSetzen( double sekunden ) 
+    {
+        super.registriereTicker( sekunden , this );
     }
     
     
     /**
-     * Ueberprueft, ob eine Taste gerade gedrueckt gehalten wird.
+     * Stoppt die Ticker-Funktion. Die tick()-Methode
+     * wird nicht weiter aufgerufen. Der automatische Aufruf der 
+     * tick()-Methode kann durch die Methode 
+     * tickerNeuStarten(double sekunden) wiedergestartet werden.
+     * 
+     * @see     #tickerNeuStarten(double)
+     * @see     #tickerIntervallSetzen(double)
+     * @see     #tickerStoppen(double)
+     */
+    public void tickerStoppen() 
+    {
+        super.entferneTicker( this );
+    }
+    
+    
+    /**
+     * Startet den Ticker neu.
+     * 
+     * @param   sekunden      Die Zeit in Sekunden zwischen zwei Aufrufen der tick()-Methode. 
+     * 
+     * @see     #tickerIntervallSetzen(double)
+     * @see     #tick()
+     * @see     #tickerStoppen()
+     */
+    public void tickerNeuStarten( double sekunden ) 
+    {
+        super.registriereTicker( sekunden , this );
+    }
+    
+    
+    
+    
+    
+    // =====   M e t h o d e n   z u m   U e b e s c h r e i b e n   ======================================
+    
+    /**
+     * Wird nach Aufruf von tickerNeuStarten(double) regelmaessig automatisch aufgerufen. So kommt Bewegung ins Spiel! 
+     * Tick-Intervall kann angepasst werden. Ticker muss erst gestartet werden!
+     * 
+     * @see     #tickerNeuStarten(double)
+     * @see     #tickerStoppen()
+     * @see     #tickerIntervallSetzen(double)
+     */
+    @Override
+    public void tick() 
+    {
+        zaehler++;
+        zaehler = zaehler % 2;
+        if ( zaehler == 1 ) { System.out.println( "Tick!" ); }
+        else                { System.out.println( "Tack!" ); }
+    }
+    
+
+    /**
+     * Wird bei jedem <b>Druecken einer Taste/b> automatisch aufgerufen 
+     * und automatisch das Kuerzel der entsprechenden Taste mitgegeben.
+     * 
+     * @param   taste   ganzzahliges Kuerzel der Taste 
+     *                  oder ENUM-Typ aus <b>Klasse TASTE</b> (darin die Klassen-Doku lesen)
+     */
+    @Override
+    public void tasteReagieren( int taste ) 
+    {
+        System.out.println( "Taste mit Kuerzel " + taste + " wurde gedrueckt" );
+    }
+    
+    
+    /**
+     * Wird bei jedem <b>Loslassen einer Taste</b> automatisch aufgerufen 
+     * und automatisch das Kuerzel der entsprechenden Taste mitgegeben.
+     * 
+     * @param   taste   ganzzahliges Kuerzel der Taste 
+     *                  oder ENUM-Typ aus <b>Klasse TASTE</b> (darin die Klassen-Doku lesen)
+     */
+    @Override
+    public void tasteLosgelassenReagieren(int taste) 
+    {
+        //System.out.println( "Taste mit Kuerzel " + taste + " wurde losgelassen" );
+    }
+    
+    
+    /**
+     * Ueberprueft, ob eine <b>Taste gerade gedrueckt gehalten</b> wird.
      * 
      * @param   taste   Der ganzzahlige Wert, der fuer die gedrueckte Taste steht.
-     *                  Details koennen in der <i>Tabelle aller Tastaturkuerzel</i> abgelesen werden. 
-     *                  Oder man verwendet die ENUM-Typen der Klasse TASTE (Klassen-Doku lesen).
+     *                  Details koennen im ENUM-Typen der <b>Klasse TASTE</b> nachgelesen werden.
      *                  
      * @return  true, falls die Taste gedrueckt gehalten wird.                 
      */
@@ -291,10 +295,67 @@ extends Spiel
     }
     
     
+    /**
+     * Wird bei jedem <b>Mausklick (Linksklick)</b> automatisch aufgerufen. 
+     * <b> !!! Funktioniert nur, wenn ein Konstruktor von SPIEL mit Maus-Unteratuetzung aufgerufen wurde !!! </b>
+     * 
+     * @param   x           Die X-Koordinate des Klicks
+     * @param   y           Die Y-Koordinate des Klicks
+     */
+    @Override
+    public void klickReagieren( double x , double y ) 
+    {
+        System.out.println( "Klick bei (" + x  + ", " + y + ")." );
+    }
+    
+    
+    /**
+     * Wird bei jedem <b>Loslassen der Mausktaste (Linksklick)</b> automatisch aufgerufen. 
+     * <b> !!! Funktioniert nur, wenn ein Konstruktor von SPIEL mit Maus-Unteratuetzung aufgerufen wurde !!! </b>
+     * 
+     * @param   x           Die X-Koordinate des Klicks
+     * @param   y           Die Y-Koordinate des Klicks
+     */
+    @Override
+    public void klickLosgelassenReagieren(double x, double y) {
+        //System.out.println( "Losgelassen bei (" + x  + ", " + y + ")." );
+    }
+    
+    
+    /**
+     * Wird bei jedem <b>Drehen am Mausrad</b> automatisch aufgerufen. 
+     * <b> !!! Funktioniert nur, wenn ein Konstruktor von SPIEL mit Maus-Unteratuetzung aufgerufen wurde !!! </b>
+     * 
+     * @param   drehung     Wie stark das Rad gedreht wurde, inkl. Vorzeichen: 
+     *                      + Mausrad von sich weg drehen ;  - zu sich hin drehen
+     */
+    @Override
+    public void mausRadReagieren(double drehung) {
+        System.out.println("Mausrad wurde um " + drehung + " gedreht");
+    }
+    
+    
+    /**
+     * Wird fuer jeden Frame (Bild-Aktualisierung) des Spiels exakt einmal aufgerufen. 
+     * 
+     * Extra-Info fuer Nerds: nur in der aktuellen Szene!
+     *  --> EDU Games agieren in der Regel nur innerhalb einer Scene ("Hauptszene"). 
+     *      Du kannst aber mehrere Szenen erzeugen.
+     * 
+     * @param   sekunden    Die Anzahl an Sekunden, die seit dem letzten Frame vergangen sind.
+     */
+    @Override
+    public void bildAktualisierungReagieren(double sekunden) {
+        // Methode fuer Echtzeitanwendungen, z.B. Methode der kleinen Schritte 
+        // in Subklasse ueberschreiben und statt tick() nutzen.
+        //System.out.println("Frame Update nach " + sekunden + " Sekunden");
+    }
     
     
     
-    // ===  K a m e r a  ===
+    
+    
+    // =====    K a m e r a    =====================================================================
     
     /**
      * Verschiebt die Kamera um ein Stueck. 
@@ -302,40 +363,44 @@ extends Spiel
      * @param   dX      Anzahl Pixel in x-Richtung
      * @param   dY      Anzahl Pixel in y-Richtung
      */
-    public void verschiebeKamera( float dX , float dY )
+    public void verschiebeKamera( double dX , double dY )
     {
         super.verschiebeKamera( dX , dY );
     }
+    
     
     /**
      * Setzt den Zoom-Faktor der Kamera. 1.0 ist normal. 
      *
      * @param   zoom    Zoom-Faktor: >1 vergroessert ; <1 (aber >0) verkleinert
      */
-    public void setzeKameraZoom( float zoom )
+    public void setzeKamerazoom( double zoom )
     {
-        super.setzeKameraZoom( zoom );
+        super.setzeKamerazoom( zoom );
     }
+    
     
     /**
      * Nennt den aktuellen Zoom-Wert der Kamera. 
      *
      * @return  aktueller Zoom-Wert der Kamera: >1 vergroessert ; <1 (aber >0) verkleinert
      */
-    public float nenneKameraZoom()
+    public double nenneKamerazoom()
     {
-        return super.nenneKameraZoom();
+        return super.nenneKamerazoom();
     }
+    
     
     /**
      * Setze den Kamera-Fokus auf ein bestimmtes Objekt. 
      *
      * @param   focus   Das neue Objekt im Zentrum der Kamera
      */
-    public void setzeKameraFokus( Actor focus )
+    public void setzeKamerafokus( EduActor focus )
     {
-        super.setzeKameraFokus( focus);
+        super.setzeKamerafokus( focus );
     }
+    
     
     /**
      * Rotiert die Kamera im oder gegen den Uhrzeigersinn. 
@@ -343,86 +408,73 @@ extends Spiel
      * @param   winkelInGrad    Winkel, um den gedreht werden soll.
      *                          >0 im Uhrzeigersinn ; <0 gegen den Uhrzeigersinn
      */
-    public void rotiereKamera( float winkelInGrad )
+    public void rotiereKamera( double winkelInGrad )
     {
-        super.rotiereKamera( (float)(Math.toRadians( winkelInGrad )) );
+        super.rotiereKamera( winkelInGrad );
     }
+    
     
     /**
      * Setzt den Rotationswinkel der Kamera auf einen bestimmten Wert. 
      *
      * @param   winkelInGrad    Der neue Kamera-Winkel in Grad
      */
-    public void setzeKameraRotation( float winkelInGrad )
+    public void setzeKamerarotation( double winkelInGrad )
     {
-        super.setzeKameraRotation( (float)(Math.toRadians( winkelInGrad )) );
+        super.setzeKamerarotation( (double)(Math.toRadians( winkelInGrad )) );
     }
     
     
     
     
     
-    // ===  S z e n e n  ===
-    
-    // /**
-     // * Benennt eine Szene
-     // *
-     // * @param   name    neuer Name der Szene
-     // */
-    // public void benenneSzene(String name) {
-        // super.benenneSzene(name);
-    // }
-    
-    // /**
-     // * Laedt eine (andere) Szene
-     // *
-     // * @param   name    Name der zu ladenden Szene
-     // */
-    // public void setzeSzene(String name) {
-        // super.setzeSzene(name);
-    // }
-    
-    // public void entferneSzene(String name) {
-        // //TO IMPLEMENT
-    // }
-    
-    // /**
-     // * Erzeugt eine neue Szene
-     // */
-    // public void neueSzene() {
-        // super.neueSzene();
-    // }
-    
-    
-    
-    
-    
-    // ===  D e b u g  ===
+    // =====   S z e n e n    ========================================================================
     
     /**
-     * Methode zeigeKoordinatensystem
+     * Benennt eine Szene
      *
-     * @param anzeigen Ein Parameter
+     * @param   name    neuer Name der Szene
      */
-    public static void zeigeKoordinatensystem( boolean anzeigen )
-    {
-        ea.Game.setDebug( anzeigen );
+    public void benenneSzene(String name) {
+        super.benenneAktiveSzene(name);
+    }
+    
+    /**
+     * Laedt eine (andere) Szene
+     *
+     * @param   name    Name der zu ladenden Szene
+     */
+    public void setzeSzene(String name) {
+        super.setzeAktiveSzene(name);
+    }
+    
+    // public void entferneSzene(String name) {
+        // // ToDo
+    // }
+    
+    /**
+     * Erzeugt eine neue Szene
+     */
+    public void neueSzene() {
+        super.erzeugeNeueSzene();
     }
     
     
     
     
     
-    // ===  D i a l o g e  ===
+    // =====    D i a l o g e    ======================================================================
+    
+    // Diese Methoden koennen den Spiel-Ablauf stoeren! Kann z.B. mit tick() Probleme geben!
     
     /**
      * Gibt ein <b>blockierendes</b> Nachricht-Fenster aus.
      *
      * @param   nachricht   angezeigte Nachricht in dem Fenster
      */
-    public void nachricht( String nachricht )
+    public void zeigeNachricht( String nachricht )
     {
-        super.nachricht( nachricht );
+        super.zeigeNachricht( nachricht );
     }
     
     
@@ -432,9 +484,9 @@ extends Spiel
      * @param   frage   angezeigte Frage in dem Fenster
      * @return  'true' = Ja , 'false' = Nein
      */
-    public boolean frageJaNein( String frage )
+    public boolean zeigeNachrichtMitJaNein( String frage )
     {
-        return super.frageJaNein( frage );
+        return super.zeigeNachrichtMitJaNein( frage );
     }
     
     
@@ -444,9 +496,9 @@ extends Spiel
      * @param   frage   angezeigte Frage in dem Fenster
      * @return  'true' = Ok , 'false' = Abbrechen
      */
-    public boolean nachrichtOkAbbrechen( String frage )
+    public boolean zeigeNachrichtMitBestaetigung( String frage )
     {
-        return super.nachrichtOkAbbrechen( frage );
+        return super.zeigeNachrichtMitBestaetigung( frage );
     }
     
     
@@ -456,31 +508,53 @@ extends Spiel
      * @param   angezeigte Nachricht in dem Fenster
      * @return  Benutzer-Eingabe
      */
-    public String eingabe( String nachricht )
+    public String zeigeNachrichtMitEingabe( String nachricht )
     {
-        return super.eingabe( nachricht );
+        return super.zeigeNachrichtMitEingabe( nachricht );
     }
     
+    
+    
+    
+    
+    
+    // =====   P h y s i k   d e r   g e s a m t e n   S z e n e   =====================================
     
     /**
      * Setzt die Intensitaet der Schwerkraft (normal=9.8). 
      *
      * @param   meterProQuadratsekunde      Wert fuer die gewuenschte Fallbeschleunigung
      */
-    public void setzeSchwerkraft( float meterProQuadratsekunde )
+    public void setzeSchwerkraft( double meterProQuadratsekunde )
     {
         super.setzeSchwerkraft( meterProQuadratsekunde );
     }
     
     
+    
+    
+    
+    // =====   N e b e n l a e u f i g k e i t e n   a b s c h i c k e n   ==============================
+    
     /**
-     * Hiermit kann die Skalierung des Bildschirms eingestellt werden z.B. fuer physikalische Simulationen. 
-     * Standard-Wert ist 30.
+     * Die Methode 'parallel' erwartet einen Lambda-Ausdruck der Form: 
+     *  () -> methodenAufruf(parameterListe)   oder   
+     *  () -> {methode1(...);methode2(...);...;} 
+     * <b>Das ist z.B. noetig, wenn eine Methode mit 'warte(...)' durch Tasten ausgefuehrt werden soll!</b>
      *
-     * @param   ppm     Anzahl der Pixel am Monitor, die in Wirklichkeit einem Meter entspechen. (Standard=30)
+     * @param   runnable    Ein oder mehrere Methodenaufrufe als Lambda-Ausdruck
      */
-    public void setzePixelProMeter( int ppm )
+    public static void parallel( Runnable runnable )
     {
-        setzePixelProMeter( ppm );
+        new Thread(runnable).start();
     }
+    
+    // weitere interssante Technik - aber nicht so multifunktional
+    
+    // public static <T> void parallel( java.util.function.Consumer<T> consumer , T argument )
+    // {
+        // parallel(  () -> consumer.accept(argument)  );
+    // }
+    
+    
 }

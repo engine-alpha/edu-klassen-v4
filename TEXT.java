@@ -4,43 +4,33 @@ import ea.*;
 /**
  * Klasse TEXT zum Darstellen von Texten in EDU-Engine
  * 
- * @author      mike ganshorn
+ * @author      mike_gans@yahoo.de  and  michael andonie
  * 
  * @version     4.0 (2018-08-06)
  * 
  * @changelog   4.0 Umstieg auf EA 4
  * 
- *              1.3 WECHSELBILD erbt von Knoten und damit von Raum
- *                  verschiebenUm greift auf bewegen zurueck
- *                  Methoden in allen Klassen vereinheitlicht (bis auf indiv. Methoden)
- *                  setzeInhalt(int) hinzugefuegt (bisher nur String)
- *                  Konstruktor(int,int,int) hinzugefuegt (bisher nur int,int,String)
- * 
- *              1.2 Methode beruehrt(WECHSELBILD) hinzugefuegt
- * 
- *              1.1 Jump'n'Run-Physik hinzu gefuegt
  *              
  */
 public class TEXT
-extends EduText 
+extends Text 
 {
-    private float M_x;
+    private double M_x;
     
-    private float M_y;
+    private double M_y;
     
     
     /**
      * TEXT Konstruktor
      *
-     * @param   x       x-Koordinate im Fenster (Pixel)
-     * 
-     * @param   y       y-Koordinate im Fenster (Pixel)
-     * 
+     * @param   x           x-Koordinate im Fenster
+     * @param   y           y-Koordinate im Fenster
+     * @param   textHoehe   Hoehe des Texts in Bildschirm-Metern
      * @param   text    anzuzeigender Text
      */
-    public TEXT( int x , int y , String text ) 
+    public TEXT( double x , double y , double textHoehe , String text ) 
     {
-        super( text );
+        super( text , textHoehe );
         this.M_x = x;
         this.M_y = y;
         super.setzeMittelpunkt( x , y );
@@ -50,31 +40,17 @@ extends EduText
     /**
      * TEXT Konstruktor
      *
-     * @param   x       x-Koordinate im Fenster (Pixel)
-     * 
-     * @param   y       y-Koordinate im Fenster (Pixel)
-     * 
-     * @param   zahl    anzuzeigende Zahl
+     * @param   x           x-Koordinate im Fenster
+     * @param   y           y-Koordinate im Fenster
+     * @param   textHoehe   Hoehe des Texts in Bildschirm-Metern
+     * @param   zahl        anzuzeigende Zahl
      */
-    public TEXT(int x , int y , int zahl ) 
+    public TEXT( double x , double y , double textHoehe , int zahl ) 
     {
-        super( ""+zahl );
+        super( ""+zahl , textHoehe );
         this.M_x = x;
         this.M_y = y;
         super.setzeMittelpunkt( x , y );
-    }
-    
-    
-    /**
-     * Legt die Ebene fest, in der das Objekt gezeichnet wird. 
-     * Ebenen mit grossen Nummern ueberdecken Ebenen mit kleineren Nummern. 
-     * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt. 
-     *
-     * @param   ebenenNummer    -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) ; 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
-     */
-    public void setzeEbene( int ebenenNummer )
-    {
-        this.setLayer( ebenenNummer );
     }
     
     
@@ -94,7 +70,7 @@ extends EduText
      *
      * @param   text    Der neue Text
      */
-    public void setzeInhalt( float zahl )
+    public void setzeInhalt( double zahl )
     {
         super.setzeInhalt( "" + zahl );
     }
@@ -103,11 +79,11 @@ extends EduText
     /**
      * Setzt die Schriftgroesse auf einen neuen Wert.
      *
-     * @param   schriftgroesse  neue Schriftgroesse
+     * @param   schriftHoehe    neue Schrifthoehe in Bildschirm-Metern
      */
-    public void setzeGroesse( int schriftgroesse )
+    public void setzeSchriftHoehe( double schriftHoehe )
     {
-        super.setzeGroesse( schriftgroesse );
+        super.setzeHoehe( schriftHoehe );
     }
     
     
@@ -129,7 +105,7 @@ extends EduText
      */
     public void setzeSchriftart( String ttfDatei )
     {
-        super.setFont( ttfDatei );
+        getActor().setFont( ttfDatei );
     }
     
     
@@ -140,18 +116,17 @@ extends EduText
      */
     public void setzeStil( int schriftStil )
     {
-        super.setStyle( schriftStil );
+        getActor().setStyle( schriftStil );
     }
     
     
     /**
      * Verschiebt das Objekt um die angegebenen Pixel. 
      *
-     * @param   deltaX  Pixel in x-Richtung (wird bei Bedarf auf ganze Pixel gerundet)
-     * 
-     * @param   deltaY  Pixel in y-Richtung (wird bei Bedarf auf ganze Pixel gerundet)
+     * @param   deltaX  Bildschirm-Meter in x-Richtung
+     * @param   deltaY  Bildschirm-Meter in y-Richtung
      */
-    public void verschiebenUm( float deltaX , float deltaY ) 
+    public void verschiebenUm( double deltaX , double deltaY ) 
     {
         this.M_x += deltaX;
         this.M_y += deltaY;
@@ -168,33 +143,31 @@ extends EduText
      */
     public boolean beruehrt( EduActor ea ) 
     {
-        return super.schneidet( ea.getActor() );
+        return super.schneidet( ea );
     }
 
     
     /**
-     * Prueft, ob das Objekt einen bestimmten Punkt (in Pixel-Koordinaten) beinhaltet. 
+     * Prueft, ob das Objekt einen bestimmten Punkt beinhaltet. 
      *
-     * @param   x   x-Koordinate des Punkts (Pixel)
-     * 
-     * @param   y   x-Koordinate des Punkts (Pixel)
+     * @param   x   x-Koordinate des Punkts
+     * @param   y   x-Koordinate des Punkts
      * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
-    public boolean beinhaltetPunkt( float x , float y ) 
+    public boolean beinhaltetPunkt( double x , double y ) 
     {
         return super.beinhaltetPunkt( x  ,y );
     }
     
     
     /**
-     * Setzt den Mittelpunkt des Objekts auf einen (in Pixel-Koordinaten) anzugebenden Punkt. 
+     * Setzt den Mittelpunkt des Objekts auf einen anzugebenden Punkt. 
      *
-     * @param   x   x-Koordinate des Mittelpunkts (Pixel)
-     * 
-     * @param   y   y-Koordinate des Mittelpunkts (Pixel)
+     * @param   x   x-Koordinate des Mittelpunkts
+     * @param   y   y-Koordinate des Mittelpunkts
      */
-    public void setzeMittelpunkt( float x , float y ) 
+    public void setzeMittelpunkt( double x , double y ) 
     {
         this.M_x = x;
         this.M_y = y;
@@ -209,29 +182,29 @@ extends EduText
      *
      * @return  Ebenen-Nummer: -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) , 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
-    public int nenneEbene()
+    public int nenneEbenenposition()
     {
-        return this.getLayer();
+        return super.nenneEbenenposition();
     }
     
     
     /**
-     * Nennt die x-Koordinate (in Pixel) des Mittelpunkts dieses Objekts. 
+     * Nennt die x-Koordinate des Mittelpunkts dieses Objekts. 
      *
-     * @return  x-Koordinate des Mittelpunkts (Pixel)
+     * @return  x-Koordinate des Mittelpunkts
      */
-    public float nenneMx() 
+    public double nenneMx() 
     {
         return this.M_x;
     }
     
     
     /**
-     * Nennt die y-Koordinate (in Pixel) des Mittelpunkts dieses Objekts. 
+     * Nennt die y-Koordinate des Mittelpunkts dieses Objekts. 
      *
-     * @return  y-Koordinate des Mittelpunkts (Pixel)
+     * @return  y-Koordinate des Mittelpunkts
      */
-    public float nenneMy() 
+    public double nenneMy() 
     {
         return this.M_y;
     }
@@ -255,7 +228,7 @@ extends EduText
      */
     public boolean nenneSichtbar()
     {
-        return super.nenneSichtbar();
+        return super.istSichtbar();
     }
     
     
@@ -265,14 +238,14 @@ extends EduText
      * @param   winkelAenderung     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void drehenUm( float winkelAenderung )
+    public void drehenUm( double winkelAenderung )
     {
-        float x = this.nenneMx();
-        float y = this.nenneMy();
-        this.setzeSichtbar( false );
-        this.drehen( (float)Math.toRadians(winkelAenderung)  );
+        double x = this.nenneMx();
+        double y = this.nenneMy();
+        super.setzeSichtbar( false );
+        super.drehen( winkelAenderung );
         this.setzeMittelpunkt( x , y );
-        this.setzeSichtbar( true );
+        super.setzeSichtbar( true );
     }
     
     
@@ -283,7 +256,7 @@ extends EduText
      *                              +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkel )
+    public void setzeDrehwinkel( double neuerDrehwinkel )
     {
         this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
     }
@@ -297,9 +270,9 @@ extends EduText
      *              +: wenn mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *              -: wenn mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public float nenneDrehwinkel()
+    public double nenneDrehwinkel()
     {
-        return (float)Math.toDegrees( super.nenneWinkel() );
+        return super.nenneDrehwinkel();
     }
     
     
@@ -312,9 +285,9 @@ extends EduText
      * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in x-Richtung 
      *          (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandX( EduActor ea )
+    public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.mittelPunkt().x;
+        return this.M_x - ea.nenneMittelpunktX();
     }
     
     
@@ -327,14 +300,10 @@ extends EduText
      * @return  Abstand (in Pixeln) dieses Kreises vom anderen Grafik-Objekt in y-Richtung 
      *          (>0, wenn dieser Kreis unterhalb des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandY( EduActor ea )
+    public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.mittelPunkt().y;
+        return this.M_y - ea.nenneMittelpunktY();
     }
-    
-    
-    
-    
     
     
 }

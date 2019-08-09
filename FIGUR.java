@@ -1,5 +1,6 @@
 
 import ea.edu.*;
+import ea.actor.StatefulAnimation;
 
 /**
  * Klasse FIGUR repreasentiert eine Spielfigur, deren Grafik animiert ist. 
@@ -8,9 +9,9 @@ import ea.edu.*;
  * Jede Figur kann mehrere Zustaende annehmen: Je einen fuer eine Animationsfolge. 
  * So kann man z.B. eine andere Animationsfolge fuer 'laufen' verwenden als fuer 'springen' ...
  * 
- * @author      mike_gans@yahoo.de
+ * @author      mike_gans@yahoo.de  and  michael andonie
  * 
- * @version     4.0 (2018-08-06)
+ * @version     4.0 (2019-08-06)
  *                  
  * @changelog   4.0 Umstieg auf EA 4
  *                  Nicht vergleichbar mit alter Klasse FIGUR (kein Figuren-Editor mehr).
@@ -20,18 +21,20 @@ import ea.edu.*;
 public class FIGUR
 extends Figur 
 {
-    private float M_x;
+    private double M_x;
     
-    private float M_y;
+    private double M_y;
     
     
+    // =====   K o n s t r u k t o r e n   ==============================================================
 
     /**
-     * Konstruktor der Klasse FIGUR. 
+     * Konstruktor der Klasse FIGUR <b>fuer ein animiertes GIF</b>. 
      * Es wird ein erster Zustand angelegt mit der Animation des GIF.
      * 
      * @param   zustandName     Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
-     * @param   gifPfad         Datei-Pfad zu einem animierten GIF. (Liegt dieses direkt im Projekt-Ordner, so reicht der Datei-Name)
+     * @param   gifPfad         Datei-Pfad zu einem animierten GIF. 
+     *                          (Liegt dieses direkt im Projekt-Ordner, so reicht der Datei-Name)
      */
     public FIGUR( String zustandName , String gifPfad )
     {
@@ -39,17 +42,18 @@ extends Figur
     }
     
     
-    
     /**
-     * Konstruktor der Klasse FIGUR. 
-     * Die Sprites muessen alle gleich gross sein !!!
+     * Konstruktor der Klasse FIGUR fuer <b>SpriteSheets</b> oder ein <b>einfaches Bild</b>.
+     * Einfache Bilder koennen mit x=1 und y=1 geladen werden. 
+     * Sprites muessen alle gleich gross sein !!!
      * Es wird ein erster Zustand angelegt mit der Animation des Spritesheets. 
-     * Einfache Bilder koennen mit x=1 und y=1 geladen werden
+     * 
      *
      * @param   zustandName         Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
-     * @param   spritesheetPfad     Datei-Pfad zu einem Spritesheet. (Liegt dieses direkt im Projekt-Ordner, so reicht der Datei-Name)
-     * @param   x                   Anzahl der Sprites in x-Richtung
-     * @param   y                   Anzahl der Sprites in y-Richtung
+     * @param   spritesheetPfad     Datei-Pfad zu einem Spritesheet oder Bild. 
+     *                              (Liegt dieses direkt im Projekt-Ordner, so reicht der Datei-Name)
+     * @param   x                   Anzahl der Sprites in x-Richtung (bei einfachem Bild 1)
+     * @param   y                   Anzahl der Sprites in y-Richtung (bei einfachem Bild 1)
      */
         public FIGUR( String zustandName , String spritesheetPfad , int x , int y )
     {
@@ -57,15 +61,15 @@ extends Figur
     }
     
     
-    
     /**
-     * Konstruktor der Klasse FIGUR. 
+     * Konstruktor der Klasse FIGUR fuer ausgewaehlte Bilder eines Ordners (im BlueJ-Projekt). 
      * Laedt dazu alle Bilder in einem Verzeichnis ein, die zu einem bestimmten Praefix passen.
      * Es wird ein erster Zustand angelegt mit der Animation der Bilder-Folge.
      * 
      * @param zustandName       Name für den ersten Zustand.
      * @param verzeichnisPfad   Pfad zum Verzeichnis, in dem alle einzuladenden Bilder liegen.
-     * @param praefix           Das Praefix, das alle einzuladenden Bilder haben müssen.
+     * @param praefix           Das Praefix, das alle einzuladenden Bilder haben muessen: 
+     *                          z.B. "affe" fuer affe1.jpg, affe2.jpg, ...
      */
     public FIGUR( String zustandName , String verzeichnisPfad , String praefix )
     {
@@ -75,87 +79,31 @@ extends Figur
     
     
     
+    
+    // =====   g e w o e h n l i c h e   M e t h o d e n   =============================================
+    
+    /**
+     * Methode skalieren vergroessert / verkleinert die Figur. 
+     *
+     * @param   skalierungsFaktor   1 : normal ; 0<skalierungsfaktor<1 : kleiner ; >1 : groesser
+     */
+    public void skaliere( double skalierungsFaktor )
+    {
+        super.skaliere( skalierungsFaktor );
+    }
+    
+    
     /**
      * Legt die Ebene fest, in der das Objekt gezeichnet wird. 
      * Ebenen mit grossen Nummern ueberdecken Ebenen mit kleineren Nummern. 
-     * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt. 
+     * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt.  
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @param   ebenenNummer    -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) ; 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
     public void setzeEbene( int ebenenNummer )
     {
-        this.setLayer( ebenenNummer );
-    }
-    
-    
-    
-    
-    /**
-     * Fuegt einen neuen Zustand mit GIF-Animation ein. 
-     * 
-     * @param   zustandsName    Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
-     * @param   bildpfad        Pfad zum animierten GIF fuer diesen Zustand.
-     */
-    public void zustandHinzufuegenVonGIF( String zustandsName , String bildpfad )
-    {
-        super.zustandHinzufuegenVonGIF( zustandsName , bildpfad );
-    }
-    
-    
-    /**
-     * Fuegt einen neuen Zustand mit Spritesheet-Animation ein. 
-     * Das Spritesheet muss <b>aus Kacheln gleicher Größe</b> bestehen.
-     * "leere" Kacheln werden als leere Animationsframes mit einbezogen.
-     * 
-     * @param   zustandsName  Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
-     * @param   bildpfad      Pfad zum Spritesheet. (Liegt diese im Projekt-Ordner, so reicht der Datei-Name)
-     * @param   anzahlX       Anzahl der Spritesheet-Kacheln in die X-Richtung.
-     * @param   anzahlY       Anzahl der Spritesheet-Kacheln in die Y-Richtung.
-     */
-    public void zustandHinzufuegenVonSpritesheet( String zustandsName , String bildpfad , int anzahlX , int anzahlY )
-    {
-        super.zustandHinzufuegenVonSpritesheet( zustandsName , bildpfad , anzahlX , anzahlY );
-    }
-    
-    
-    /**
-     * Fuegt einen neuen Zustand durch einzelne Bilder ein. 
-     * Die Bilder werden automatisch der Reihe nach durchgewechselt.
-     * 
-     * @param   zustandsName    Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
-     * @param   bildpfade       Die Pfade der einzelnen Bilder in korrekter Reihenfolge.
-     */
-    public void zustandHinzufuegenVonBildern( String zustandsName , String... bildpfade )
-    {
-        zustandHinzufuegenVonBildern( zustandsName , bildpfade );
-    }
-    
-    
-    /**
-     * Setzt den Zustand der Figur neu. 
-     * In jedem Fall wird dabei der Animationsloop zurueckgesetzt.
-     * 
-     * @param   zustandsName    Der Name des zu setzenden Zustands. 
-     *                          Unter diesem Namen muss ein Zustand in dieser Figur existieren.
-     */
-    public void setzeZustand( String zustandsName )
-    {
-        super.zustandSetzen( zustandsName )   ;
-    }
-    
-    
-    /**
-     * Setzt einen automatischen Uebergang von einem Zustand zu einem anderen. 
-     * Wird der erste Zustand aufgerufen, so wird erst <b>EIN MAL</b> die Animation dieses ersten Zustands 
-     * aufgerufen und automatisch <b>anschliessend wiederholt</b> die Animation des zweiten Zustands.
-     * 
-     * @param   zustandVon      Der erste Zustand.
-     * @param   zustandNach     Der zweite Zustand, zu dem die Figur automatisch uebergehen soll, 
-     *                          nachdem die animation des ersten Zustands einmal bis zum Ende durchgelaufen ist.
-     */
-    public void automatischenUebergangSetzen( String zustandVon , String zustandNach )
-    {
-        super.automatischenUebergangSetzen( zustandVon , zustandNach );
+        this.getActor().setLayerPosition( ebenenNummer );
     }
     
     
@@ -166,9 +114,9 @@ extends Figur
      *
      * @return  Ebenen-Nummer: -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) , 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
-    public int nenneEbene()
+    public int nenneEbenenposition()
     {
-        return this.getLayer();
+        return super.nenneEbenenposition();
     }
     
     
@@ -179,7 +127,7 @@ extends Figur
      */
     public String nenneAktuellenZustand()
     {
-        return super.nenneAktuellenZustand();
+        return super.nenneAktivenZustand();
     }
     
     
@@ -187,11 +135,11 @@ extends Figur
      * Setzt die Animationsgeschwindigkeit eines zustands neu. 
      *
      * @param   zustandName     Name des Zustands, dessen Animationsgeschwindigkeit man aendern moechte
-     * @param   frameDauerInMS  Dauer in Millisekunden fuer ein Bild
+     * @param   frameDauerInSek  Dauer in Sekunden fuer ein Bild
      */
-    public void setzeAnimationsGeschwindigkeitVon( String zustandName , int frameDauerInMS )
+    public void setzeAnimationsGeschwindigkeitVon( String zustandName , double frameDauerInSek )
     {
-        super.setzeAnimationsGeschwindigkeitVon( zustandName , frameDauerInMS );
+        super.setzeAnimationsgeschwindigkeit( zustandName , frameDauerInSek );
     }
     
     
@@ -201,7 +149,7 @@ extends Figur
      * @param   x   Die x-Koordinate des neuen Mittelpunkts
      * @param   y   Die y-Koordinate des neuen Mittelpunkts
      */
-    public void setzeMittelpunkt( float x , float y )
+    public void setzeMittelpunkt( double x , double y )
     {
         this.M_x = x;
         this.M_y = y;
@@ -214,7 +162,7 @@ extends Figur
      *
      * @return   x-Koordinate des Mittelpunkts
      */
-    public float nenneMx()
+    public double nenneMx()
     {
         return this.M_x;
     }
@@ -225,7 +173,7 @@ extends Figur
      *
      * @return   y-Koordinate des Mittelpunkts
      */
-    public float nenneMy()
+    public double nenneMy()
     {
         return this.M_y;
     }
@@ -249,7 +197,7 @@ extends Figur
      */
     public boolean nenneSichtbar()
     {
-        return super.nenneSichtbar();
+        return super.istSichtbar();
     }
     
     
@@ -260,7 +208,7 @@ extends Figur
      * 
      * @param   deltaY  Der Y Anteil dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
      */
-    public void verschiebenUm( float deltaX , float deltaY ) 
+    public void verschiebenUm( double deltaX , double deltaY ) 
     {
         this.M_x += deltaX;
         this.M_y += deltaY;
@@ -277,7 +225,7 @@ extends Figur
      */
     public boolean beruehrt( EduActor ea ) 
     {
-        return super.schneidet( ea.getActor() );
+        return super.schneidet( ea );
     }
     
     
@@ -288,7 +236,7 @@ extends Figur
      * @param   y   x-Koordinate des Punkts (Pixel)
      * @return      true, wenn Punkt innerhalb der Grafik
      */
-    public boolean beinhaltetPunkt( float x , float y ) 
+    public boolean beinhaltetPunkt( double x , double y ) 
     {
         return super.beinhaltetPunkt( x , y );
     }
@@ -302,9 +250,9 @@ extends Figur
      * 
      * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in x-Richtung (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandX( EduActor ea )
+    public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.mittelPunkt().x;
+        return this.M_x - ea.nenneMittelpunktX();
     }
     
     
@@ -316,9 +264,9 @@ extends Figur
      * 
      * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in y-Richtung (>0, wenn dieses Rechteck unterhalb des anderen Grafik-Objekts liegt)
      */
-    public float berechneAbstandY( EduActor ea )
+    public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.mittelPunkt().y;
+        return this.M_y - ea.nenneMittelpunktY();
     }
     
     
@@ -328,12 +276,12 @@ extends Figur
      * @param   winkelAenderung     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void drehenUm( float winkelAenderung )
+    public void drehenUm( double winkelAenderung )
     {
-        float x = this.nenneMx();
-        float y = this.nenneMy();
+        double x = this.nenneMx();
+        double y = this.nenneMy();
         this.setzeSichtbar( false );
-        this.drehen( (float)Math.toRadians(winkelAenderung)  );
+        this.drehen( winkelAenderung );
         this.setzeMittelpunkt( x , y );
         this.setzeSichtbar( true );
     }
@@ -346,7 +294,7 @@ extends Figur
      *                              +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkel )
+    public void setzeDrehwinkel( double neuerDrehwinkel )
     {
         this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
     }
@@ -360,9 +308,9 @@ extends Figur
      *              +: wenn mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *              -: wenn mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public float nenneDrehwinkel()
+    public double nenneDrehwinkel()
     {
-        return (float)Math.toDegrees( super.nenneWinkel() );
+        return super.nenneDrehwinkel();
     }
     
     
@@ -372,7 +320,7 @@ extends Figur
      * @param   gespiegelt  'true' spiegeln, 'false' nicht spiegeln
      */
     public void spiegelnHorizontal( boolean gespiegelt ) {
-        this.setFlipHorizontal( gespiegelt );
+        ((StatefulAnimation)this.getActor()).setFlipHorizontal( gespiegelt );
     }
     
     
@@ -382,11 +330,94 @@ extends Figur
      * @param   gespiegelt  'true' spiegeln, 'false' nicht spiegeln
      */
     public void spiegelnVertikal( boolean gespiegelt ) {
-        super.setFlipVertical( gespiegelt );
+        ((StatefulAnimation)super.getActor()).setFlipVertical( gespiegelt );
     }
     
     
     
     
     
+    // =====   Z u s t a n d s - A u t o m a t   =============================================================
+    
+    /**
+     * Fuegt einen neuen Zustand <b>mit GIF-Animation</b> ein. 
+     * 
+     * @param   zustandsName    Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
+     * @param   bildpfad        Pfad zum animierten GIF fuer diesen Zustand.
+     */
+    public void fuegeZustandVonGifHinzu( String zustandsName , String bildpfad )
+    {
+        super.fuegeZustandVonGifHinzu( zustandsName , bildpfad );
+    }
+    
+    
+    /**
+     * Fuegt einen neuen Zustand <b>mit Spritesheet-Animation</b> ein. 
+     * Das Spritesheet muss <b>aus Kacheln gleicher Größe</b> bestehen.
+     * "leere" Kacheln werden als leere Animationsframes mit einbezogen.
+     * 
+     * @param   zustandsName  Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
+     * @param   bildpfad      Pfad zum Spritesheet. (Liegt diese im Projekt-Ordner, so reicht der Datei-Name)
+     * @param   anzahlX       Anzahl der Spritesheet-Kacheln in die X-Richtung.
+     * @param   anzahlY       Anzahl der Spritesheet-Kacheln in die Y-Richtung.
+     */
+    public void fuegeZustandVonSpritesheetHinzu( String zustandsName , String bildpfad , int anzahlX , int anzahlY )
+    {
+        super.fuegeZustandVonSpritesheetHinzu( zustandsName , bildpfad , anzahlX , anzahlY );
+    }
+    
+    
+    /**
+     * Fuegt einen neuen Zustand <b>durch einzelne Bilder</b> ein. 
+     * Die Bilder werden automatisch der Reihe nach durchgewechselt.
+     * 
+     * @param   zustandsName    Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
+     * @param   bildpfade       Die Pfade der einzelnen Bilder in korrekter Reihenfolge.
+     */
+    public void fuegeZustandVonEinzelbildernHinzu( String zustandsName , String... bildpfade )
+    {
+        super.fuegeZustandVonEinzelbildernHinzu( zustandsName , bildpfade );
+    }
+    
+    
+    /**
+     * Fuegt einen neuen Zustand <b>durch ausgewaehlte Bilder eines Ordners</b> ein. 
+     * Die Bilder werden automatisch der Reihe nach durchgewechselt.
+     * 
+     * @param   zustandsName    Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)
+     * @param   verzeichnis     Der Name des Ordners (innerhalb des BlueJ-Projekts) in dem die Bilder liegen
+     * @param   praefix         gemeinsamer Namensbestandteil: z.B. "affe" fuer affe1.jpg, affe2.jpg, ...
+     */
+    public void fuegeZustandVonPraefixHinzu( String zustandsName , String verzeichnis , String praefix )
+    {
+        this.fuegeZustandVonPraefixHinzu( zustandsName , verzeichnis , praefix );
+    }
+    
+    
+    /**
+     * Versetzt die Figur in einen anderen (bereits existierenden) Zustand. 
+     * In jedem Fall wird dabei der Animationsloop zurueckgesetzt.
+     * 
+     * @param   zustandsName    Der Name des zu setzenden Zustands. 
+     *                          Unter diesem Namen muss ein Zustand in dieser Figur existieren.
+     */
+    public void setzeZustand( String zustandsName )
+    {
+        super.setzeZustand( zustandsName );
+    }
+    
+    
+    /**
+     * Setzt einen automatischen Uebergang von einem Zustand zu einem anderen. 
+     * Wird der erste Zustand aufgerufen, so wird erst <b>EIN MAL</b> die Animation dieses ersten Zustands 
+     * aufgerufen und automatisch <b>anschliessend wiederholt</b> die Animation des zweiten Zustands.
+     * 
+     * @param   zustandVon      Der erste Zustand.
+     * @param   zustandNach     Der zweite Zustand, zu dem die Figur automatisch uebergehen soll, 
+     *                          nachdem die animation des ersten Zustands einmal bis zum Ende durchgelaufen ist.
+     */
+    public void setzeAutomatischenUebergang( String zustandVon , String zustandNach )
+    {
+        super.setzeAutomatischenUebergang( zustandVon , zustandNach );
+    }
 }

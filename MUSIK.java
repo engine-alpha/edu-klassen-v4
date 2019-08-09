@@ -1,5 +1,5 @@
-import ea.sound.Music;
-
+//import ea.sound.Music;
+//  N O C H   B A U S T E L L E  -  geht noch nicht !!!
 /**
  * Klasse MUSIK kann WAV, AU, (noch nicht MP3) Dateien abspielen
  * 
@@ -11,67 +11,67 @@ import ea.sound.Music;
  *              2.0 Umstieg von javaZoom auf Engine-Alpha-Sound
  */
 public class MUSIK 
-extends Music
+//extends Music
 {
     
 
-    /**
-     * Konstruktor der Klasse MUSIK.
-     * 
-     * @param   datei   Name der Datei (mit Endung) - muss im Projekt-Ordner liegen
-     */
-    public MUSIK( String datei )
-    {
-        super( datei );
-    }
+    // /**
+     // * Konstruktor der Klasse MUSIK.
+     // * 
+     // * @param   datei   Name der Datei (mit Endung) - muss im Projekt-Ordner liegen
+     // */
+    // public MUSIK( String datei )
+    // {
+        // super( datei );
+    // }
 
     
-    /**
-     * Methode play.
-     *
-     */
-    public void play()
-    {
-        super.play();
-    }
+    // /**
+     // * Methode play.
+     // *
+     // */
+    // public void play()
+    // {
+        // super.play();
+    // }
     
     
-    /**
-     * Methode loop.
-     *
-     */
-    public void loop()
-    {
-        super.loop();
-    }
+    // /**
+     // * Methode loop.
+     // *
+     // */
+    // public void loop()
+    // {
+        // super.loop();
+    // }
     
     
-    /**
-     * Methode pause.
-     *
-     */
-    public void pause()
-    {
-        super.pause();
-    }
+    // /**
+     // * Methode pause.
+     // *
+     // */
+    // public void pause()
+    // {
+        // super.pause();
+    // }
     
     
-    /**
-     * Methode unpause.
-     *
-     */
-    public void unpause()
-    {
-        super.resume();
-    }
+    // /**
+     // * Methode unpause.
+     // *
+     // */
+    // public void unpause()
+    // {
+        // super.resume();
+    // }
     
     
-    /**
-     * Methode stop.
-     *
-     */
-    public void stop()
-    {
-        super.stop();
-    }
+    // /**
+     // * Methode stop.
+     // *
+     // */
+    // public void stop()
+    // {
+        // super.stop();
+    // }
 }

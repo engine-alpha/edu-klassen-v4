@@ -1,21 +1,10 @@
-/** @author     mike ganshorn + michael andonie
+/** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2018-08-06)
+ *  @Version    4.0 (2019-08-06)
  *  
  *  
  *  @changelog  4.0 Umstieg auf EA 4
  *  
- *              2.4 WECHSELBILD erbt von Knoten und damit von Raum
- *                  verschiebenUm greift auf bewegen zurueck
- *                  Methoden in allen Klassen vereinheitlicht (bis auf indiv. Methoden)
- *  
- *              2.3 Methode beruehrt(WECHSELBILD) hinzugefuegt
- *  
- *              2.2 Jump'n'Run-Physik hinzu gefuegt
- *  
- *              2.1 Bei Aenderung der Breite/Hoehe bleibt der Mittelpunkt erhalten
- *                  Keine Abhaengigkeit mehr zwischen den alpha-Formen
- *              
 */
 
 import ea.edu.Rechteck;
@@ -25,7 +14,7 @@ import ea.edu.EduActor;
  * Diese Klasse stellt ein einfaches Rechteck dar.
  */
 public class RECHTECK 
-implements EduActor
+extends Rechteck
 {
         
     /**
@@ -46,22 +35,22 @@ implements EduActor
     /**
      * Breite des Rechtecks
      */
-    private float breite;
+    private double breite;
     
     /**
      * Hoehe des Rechtecks
      */
-    private float hoehe;
+    private double hoehe;
     
     /**
      * x-Koordinate ds Mittelpunkts
      */
-    private float M_x;
+    private double M_x;
     
     /**
      * y-Koordinate des Mittelpunkts
      */
-    private float M_y;
+    private double M_y;
     
     
     /**
@@ -69,29 +58,30 @@ implements EduActor
      */
     public RECHTECK() 
     {
-        this( 200 , 130 );
+        this( 170/30f , 110/30f );
     }
     
     
     /**
      * Konstruktor der Klasse <code>RECHTECK</code>. Erstellt ein neues Rechteck mit gegebenen Massen.
      *
-     * @param   breite  Breite des Rechtecks
+     * @param   breite  Breite des Rechtecks (in Bildschirm-Metern)
      * 
-     * @param   hoehe   Hoehe des Rechtecks
+     * @param   hoehe   Hoehe des Rechtecks (in Bildschirm-Metern)
      */
-    public RECHTECK( float breite , float hoehe ) 
+    public RECHTECK( double breite , double hoehe ) 
     {
-        this.rechteck = new Rechteck( breite, hoehe);
+        super( breite , hoehe );
+        //this.rechteck = new Rechteck( breite, hoehe);
         this.sichtbar = true;
-        this.rechteck.setzeSichtbar( true );
+        super.setzeSichtbar( true );
         this.farbe = "Rot";
-        this.rechteck.setzeFarbe( this.farbe );
+        super.setzeFarbe( this.farbe );
         this.breite = breite;
         this.hoehe = hoehe;
-        this.M_x = 250;
-        this.M_y = 150;
-        this.rechteck.setzeMittelpunkt( this.M_x , this.M_y );
+        this.M_x = 6;
+        this.M_y = 4;
+        super.setzeMittelpunkt( this.M_x , this.M_y );
         
     }
     
@@ -100,61 +90,64 @@ implements EduActor
      * Legt die Ebene fest, in der das Objekt gezeichnet wird. 
      * Ebenen mit grossen Nummern ueberdecken Ebenen mit kleineren Nummern. 
      * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt. 
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @param   ebenenNummer    -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) ; 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
     public void setzeEbene( int ebenenNummer )
     {
-        this.rechteck.setLayer( ebenenNummer );
+        super.getActor().setLayerPosition( ebenenNummer );
     }
     
     
     /**
      * Setzt die Hoehe und Breite dieses Rechtecks neu.
      * 
-     * @param   breite  Die neue Breite dieses Rechtecks
+     * @param   breite  Die neue Breite dieses Rechtecks (in Bildschirm-Metern)
      * 
-     * @param   hoehe   Die neue Hoehe dieses Rechtecks
+     * @param   hoehe   Die neue Hoehe dieses Rechtecks (in Bildschirm-Metern)
      */
-    public void setzeGroesse( float breite , float hoehe ) 
+    public void setzeGroesse( double breite , double hoehe ) 
     {
-        float x = this.nenneMx();
-        float y = this.nenneMy();
-        float winkel = this.nenneDrehwinkel();
-        this.rechteck.entfernen();
-        this.breite = breite;
-        this.hoehe = hoehe;
-        this.rechteck = new Rechteck( breite , hoehe );
-        this.rechteck.setzeMittelpunkt( x , y );
-        this.rechteck.setzeFarbe( this.farbe );
-        this.setzeDrehwinkel( winkel );
+        double x = this.nenneMx();
+        double y = this.nenneMy();
+        //double winkel = this.nenneDrehwinkel();
+        //this.rechteck.entfernen();
+        //this.breite = breite;
+        //this.hoehe = hoehe;
+        //this.rechteck = new Rechteck( breite , hoehe );
+        //this.rechteck.setzeFarbe( this.farbe );
+        //this.setzeDrehwinkel( winkel );
+        getActor().setSize((float)breite, (float)hoehe);
+        super.setzeMittelpunkt( x , y );
     }
     
     
     /**
      * Setzt die Farbe dieses Rechtecks neu.
      * 
-     * @param   farbeNeu    Diese Farbe erhaelt das Rechteck (z.B. "Rot")
+     * @param   farbeNeu    Diese Farbe erhaelt das Rechteck (z.B. "Rot"). 
+     *                      Farbnamen koennen in der Readme.txt im BlueJ-Projekt nachgelesen werden.
      */
     public void setzeFarbe( String farbeNeu ) 
     {
         this.farbe = farbeNeu;
-        this.rechteck.setzeFarbe( farbeNeu );
+        super.setzeFarbe( farbeNeu );
     }
     
     
     /**
      * Setzt den Mittelpunkt dieses Rechtecks neu.
      * 
-     * @param   x   Die X-Koordinate des neuen Mittelpunktes
+     * @param   x   Die X-Koordinate des neuen Mittelpunktes (in Bildschirm-Metern)
      * 
-     * @param   y   Die Y-Koordinate des neuen Mittelpunktes
+     * @param   y   Die Y-Koordinate des neuen Mittelpunktes (in Bildschirm-Metern)
      */
-    public void setzeMittelpunkt( float x , float y ) 
+    public void setzeMittelpunkt( double x , double y ) 
     {
         this.M_x = x;
         this.M_y = y;
-        this.rechteck.setzeMittelpunkt( x , y );
+        super.setzeMittelpunkt( x , y );
     }
     
     
@@ -168,34 +161,36 @@ implements EduActor
     public void setzeSichtbar( boolean sichtbarNeu ) 
     {
         this.sichtbar = sichtbarNeu;
-        this.rechteck.setzeSichtbar( sichtbarNeu );
+        super.setzeSichtbar( sichtbarNeu );
     }    
     
     /**
      * Verschiebt dieses Rechteck um eine Verschiebung - angegeben durch ein "Delta X" und "Delta Y".
      * 
-     * @param   deltaX  Der X Anteil dieser Verschiebung. Positive Werte verschieben nach rechts, negative nach links.
+     * @param   deltaX      Der X Anteil dieser Verschiebung (in Bildschirm-Metern).  
+     *                      Positive Werte verschieben nach rechts, negative nach links.
      * 
-     * @param   deltaY  Der Y Anteil dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
+     * @param   deltaY      Der Y Anteil dieser Verschiebung (in Bildschirm-Metern). 
+     *                      Positive Werte verschieben nach oben, negative nach unten.
      */
-    public void verschiebenUm( float deltaX , float deltaY ) 
+    public void verschiebenUm( double deltaX , double deltaY ) 
     {
         this.M_x = this.M_x + deltaX;
         this.M_y = this.M_y + deltaY;
-        this.rechteck.verschieben( deltaX , deltaY );
+        super.verschieben( deltaX , deltaY );
     }
     
     
     /**
-     * Testet, ob ein anderes Grafik-Objekt beruehrt wird.
+     * Testet, ob ein anderer EduActor beruehrt wird.
      *
-     * @param   r   Ein anderes BILD, RECHTECK, KREIS, DREIECK, ...
+     * @param   ea   Ein anderer EduActor, z.B. FIGUR, RECHTECK, KREIS, DREIECK, ...
      * 
      * @return  true, wenn sich die beiden Objekte ueberschneiden
      */
     public boolean beruehrt( EduActor ea ) 
     {
-        return this.rechteck.schneidet( ea.getActor() );
+        return super.schneidet( ea );
     }
     
     
@@ -204,77 +199,79 @@ implements EduActor
     /**
      * Methode beinhaltetPunkt
      *
-     * @param   x   x-Koordinate des Punkts (Pixel)
-     * @param   y   x-Koordinate des Punkts (Pixel)
+     * @param   x   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * @param   y   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
-    public boolean beinhaltetPunkt( float x , float y ) 
+    public boolean beinhaltetPunkt( double x , double y ) 
     {
-        return this.rechteck.beinhaltetPunkt( x , y );
+        return super.beinhaltetPunkt( x , y );
     }
     
     
     /**
      * Nennt die Nummer der Ebene, in der dieses Objekt derzeit gezeichnet wird. 
      * Durch veraendern der Ebenen-Nummer kann man Objekte vor / hinter andere stellen. 
-     * Ebenen mit groesserer Nummer verdecken Ebenen mit kleinerer Nummer.
+     * Ebenen mit groesserer Nummer verdecken Ebenen mit kleinerer Nummer. 
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @return  Ebenen-Nummer: -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) , 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
-    public int nenneEbene()
+    public int nenneEbenenposition()
     {
-        return this.rechteck.getLayer();
+        return super.nenneEbenenposition();
     }
     
        
     /**
-     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Dreiecks zurueck.
+     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Objekts (in Bildschirm-Metern) zurueck.
      * 
-     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Dreiecks
+     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Objekts (in Bildschirm-Metern)
      */
-    public float nenneMx()
+    public double nenneMx()
     {
         return this.M_x;
     }
     
     
     /**
-     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Kreises zurueck.
+     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Objekts (in Bildschirm-Metern) zurueck.
      * 
-     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Kreises
+     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Objekts (in Bildschirm-Metern)
      */
-    public float nenneMy()
+    public double nenneMy()
     {
         return this.M_y;
     }
     
     
     /**
-     * Diese Methode gibt die Breite dieses Rechtecks zurueck.
+     * Diese Methode gibt die Breite dieses Objekts (in Bildschirm-Metern) zurueck.
      * 
-     * @return  Die aktuelle Breite dieses Rechtecks
+     * @return  Die aktuelle Breite dieses Objekts (in Bildschirm-Metern)
      */
-    public float nenneBreite()
+    public double nenneBreite()
     {
         return this.breite;
     }
     
     
     /**
-     * Diese Methode gibt die Hoehe dieses Rechtecks zurueck.
+     * Diese Methode gibt die Hoehe dieses Objekts (in Bildschirm-Metern) zurueck.
      * 
-     * @return  Die aktuelle Hoehe dieses Rechtecks
+     * @return  Die aktuelle Hoehe dieses Objekts (in Bildschirm-Metern)
      */
-    public float nenneHoehe()
+    public double nenneHoehe()
     {
         return this.hoehe;
     }
     
     
     /**
-     * Diese Methode gibt die Farbe dieses Rechtecks zurueck.
+     * Diese Methode gibt die Farbe dieses Objekts zurueck.
      * 
-     * @return  Die aktuelle Farbe dieses Rechtecks
+     * @return  Die aktuelle Farbe dieses Objekts
      */
     public String nenneFarbe()
     {
@@ -283,102 +280,87 @@ implements EduActor
     
     
     /**
-     * Diese Methode gibt die Sichtbarkeit dieses Rechtecks zurueck.
+     * Diese Methode gibt die Sichtbarkeit dieses Objekts zurueck. 
      * 
-     * @return  Die aktuelle Sichtbarkeit dieses Rechtecks
+     * @return  Die aktuelle Sichtbarkeit dieses Objekts
      */
-    public boolean nenneSichtbar()
+    public boolean istSichtbar()
     {
         return this.sichtbar;
     }
     
     
     /**
-     * Diese Methode prueft, wie weit der Mittelpunkt dieses Rechtecks vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in x-Richtung entfernt ist.
+     * Diese Methode prueft, wie weit der Mittelpunkt dieses Objekts vom Mittelpunkt 
+     * eines anderen EduActors in x-Richtung (in Bildschirm-Metern) entfernt ist. 
      * 
-     * @param   grafikObjekt    Das andere Grafik-Objekt
+     * @param   ea    Der andere EduActor
      * 
-     * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in x-Richtung (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Bildschirm-Metern) dieses Objekts vom anderen EduActor in x-Richtung (>0, wenn dieses Rechteck rechts des anderen EduActors liegt)
      */
-    public float berechneAbstandX( EduActor ea )
+    public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.mittelPunkt().x;
+        return this.M_x - ea.nenneMittelpunktX();
     }
     
     
     /**
-     * Diese Methode prueft, wie weit der Mittelpunkt dieses Rechtecks vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in y-Richtung entfernt ist.
+     * Diese Methode prueft, wie weit der Mittelpunkt dieses Objekts vom Mittelpunkt 
+     * eines anderen EduActors in y-Richtung (in Bildschirm-Metern) entfernt ist. 
      * 
-     * @param   grafikObjekt    Das andere Grafik-Objekt
+     * @param   ea    Der andere EduActor (in Bildschirm-Metern)
      * 
-     * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in y-Richtung (>0, wenn dieses Rechteck unterhalb des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen EduActor in y-Richtung (>0, wenn dieses Rechteck unterhalb des anderen EduActors liegt)
      */
-    public float berechneAbstandY( EduActor ea )
+    public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.mittelPunkt().y;
+        return this.M_y - ea.nenneMittelpunktY();
     }
     
     
     /**
-     * Dreht die Grafik um einen Winkel
+     * Dreht die Grafik um einen Winkel (in Grad). 
      *
-     * @param   winkelAenderung     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     * @param   winkelInGrad        +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void drehenUm( float winkelAenderung )
+    public void drehenUm( double winkelInGrad )
     {
-        float x = this.rechteck.nenneMx();
-        float y = this.rechteck.nenneMy();
-        this.rechteck.drehen( (float)Math.toRadians(winkelAenderung)  );
-        this.rechteck.setzeMittelpunkt( x , y );
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
+        super.drehen( winkelInGrad );
+        super.setzeMittelpunkt( x , y );
     }
     
     
     /**
-     * Setzt den Drehwinkel auf eine absoluten neuen Wert
+     * Setzt den Drehwinkel auf einen absoluten neuen Wert (in Grad). 
      *
-     * @param   neuerDrehwinkel     der neue Drehwinkel
-     *                              +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
-     *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
+     * @param   neuerDrehwinkelInGrad     der neue Drehwinkel
+     *                                    +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     *                                    -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkel )
+    public void setzeDrehwinkel( double neuerDrehwinkelInGrad )
     {
-        float x = this.M_x;
-        float y = this.M_y;
-        this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
+        double x = this.M_x;
+        double y = this.M_y;
+        this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
         this.setzeMittelpunkt( x , y );
     }
     
     
     /**
-     * Nennt den Winkel, um den die Grafik gedreht wurde
+     * Nennt den Winkel (in Grad), um den die Grafik (im Vergleich zu ihrer Erzeugung) gedreht wurde
      *
-     * @return      der Winkel, um den die Grafik gedreht wurde
+     * @return      der Winkel in Grad, um den die Grafik gedreht wurde
      *              0: wenn nicht gedreht
      *              +: wenn mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *              -: wenn mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public float nenneDrehwinkel()
+    public double nenneDrehwinkel()
     {
-        return (float)Math.toDegrees( this.rechteck.nenneWinkel() );
+        return super.nenneDrehwinkel();
     }
     
-    
-    
-    
-
-    
-    
-    
-    
-    @Override
-    /**
-     * Methode des Interfaces 'GrafikObjekt'
-     */
-    public ea.actor.Actor getActor() {
-        return this.rechteck;
-    }
     
 }

@@ -4,10 +4,11 @@
  * 
  * Vermisst der Benutzer Tasten, so sind diese hier leicht nachzuruesten :-)
  * Einfach nach 'java.awt.event.KeyEvent' googlen, den Tastencode suchen und hier eine Zeile ergaenzen!
+ * Einfacher: Objekt von SPIEL erzeugen und Tste druecken ==> Nummer wird angezeigt :-)
  * 
- * @author          mike_gans@yahoo.de
+ * @author          mike_gans@yahoo.de  and  michael andonie
  * 
- * @version         4.0 (2018-08.07)
+ * @version         4.0 (2019-08-07)
  */
 public class TASTE
 {

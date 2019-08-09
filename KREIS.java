@@ -1,19 +1,9 @@
-/** @author     mike ganshorn + michael andonie
+/** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2018-08-06)
+ *  @Version    4.0 (2019-08-06)
  *  
  *  @Changelog  4.0 Umstieg auf EA 4
  *  
- *              2.4 WECHSELBILD erbt von Knoten und damit von Raum
- *                  Methoden in allen Klassen vereinheitlicht (bis auf indiv. Methoden)
- *              
- *              2.3 Methode beruehrt(WECHSELBILD) hinzugefuegt
- *  
- *              2.2 Jump'n'Run-Physik hinzu gefuegt
- *  
- *              2.1 Bei Aenderung der Breite/Hoehe bleibt der Mittelpunkt erhalten
- *                  Keine Abhaengigkeit mehr zwischen den alpha-Formen
- *              
 */
 
 import ea.edu.Kreis;
@@ -22,8 +12,8 @@ import ea.edu.EduActor;
 /**
  * Diese Klasse stellt einen einfachen Kreis dar.
  */
-public class KREIS 
-implements EduActor
+public class KREIS
+extends Kreis 
 {
      
     /**
@@ -62,26 +52,27 @@ implements EduActor
      */
     public KREIS() 
     {
-        this( 50 );
+        this( 2 );
     }
     
     
     /**
-     * Konstruktor der Klasse <code>KREIS</code>. Erstellt einen neuen Kreis mit gegebenem Radius.
+     * Konstruktor der Klasse <code>KREIS</code>. Erstellt einen neuen Kreis mit gegebenem Radius (in Bildschirm-Metern).
      *
-     * @param   rNeu    Der radius des Kreises
+     * @param   rNeu    Der radius des Kreises (in Bildschirm-Metern)
      */
     public KREIS( float rNeu ) 
     {
-        this.kreis = new Kreis( rNeu );
+        super(rNeu);
+        //this.kreis = new Kreis( rNeu );
         this.sichtbar = true;
-        this.kreis.setzeSichtbar( true );
+        super.setzeSichtbar( true );
         this.farbe = "Blau";
-        this.kreis.setzeFarbe( this.farbe );
+        super.setzeFarbe( this.farbe );
         this.radius = rNeu;
         this.M_x = 0;
         this.M_y = 0;
-        this.kreis.setzeMittelpunkt( this.M_x , this.M_y );
+        super.setzeMittelpunkt( this.M_x , this.M_y );
     }
     
     
@@ -89,56 +80,61 @@ implements EduActor
      * Legt die Ebene fest, in der das Objekt gezeichnet wird. 
      * Ebenen mit grossen Nummern ueberdecken Ebenen mit kleineren Nummern. 
      * Der Hintergrund ist -1. Jedes Objekt wird zunaechst in Ebene 0 erzeugt. 
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @param   ebenenNummer    -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) ; 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
     public void setzeEbene( int ebenenNummer )
     {
-        this.kreis.setLayer( ebenenNummer );
+        super.getActor().setLayerPosition( ebenenNummer );
     }
     
     
      /**
      * Setzt die Farbe dieses Kreises neu.
      * 
-     * @param   farbeNeu    Diese Farbe erhaelt der Kreis (z.B. "Rot")
+     * @param   farbeNeu    Diese Farbe erhaelt der Kreis (z.B. "Rot") 
+     *                      Farbnamen koennen in der Readme.txt im BlueJ-Projekt nachgelesen werden.
+     *                      
      */
     public void setzeFarbe( String farbeNeu ) 
     {
         this.farbe = farbeNeu;
-        this.kreis.setzeFarbe( farbe );
+        super.setzeFarbe( farbe );
     }
    
     
     /**
      * Setzt den Mittelpunkt dieses Kreises neu.
      * 
-     * @param x   Die X-Koordinate des Mittelpunktes.
+     * @param x   Die X-Koordinate des Mittelpunktes (in Bildschirm-Metern)
      * 
-     * @param y   Die Y-Koordinate des Mittelpunktes.
+     * @param y   Die Y-Koordinate des Mittelpunktes (in Bildschirm-Metern)
      */
     public void setzeMittelpunkt( float x , float y ) 
     {
         this.M_x = x;
         this.M_y = y;
-        this.kreis.setzeMittelpunkt( x , y );
+        super.setzeMittelpunkt( x , y );
     }
     
     
     /**
-     * Setzt den Radius dieses Kreises neu.
+     * Setzt den Radius dieses Kreises (in Bildschirm-Metern) neu.
      * 
-     * @param   radius  Der neue Radius (in Pixel)
+     * @param   radius  Der neue Radius (in Bildschirm-Metern)
      */
     public void setzeRadius( float radius ) 
     {
-        this.kreis.entfernen();
+        //super.entfernen();
         float x = this.nenneMx();
         float y = this.nenneMy();
-        this.radius = radius;
-        this.kreis = new Kreis( radius );
-        this.kreis.setzeMittelpunkt( x , y );
-        this.kreis.setzeFarbe( this.farbe );
+        //this.radius = radius;
+        //this.kreis = new Kreis( radius );
+        //super.setzeMittelpunkt( x , y );
+        //super.setzeFarbe( this.farbe )*/
+        ((ea.actor.Circle)getActor()).resetRadius(radius);
+        super.setzeMittelpunkt( x , y );
     }
     
     
@@ -151,68 +147,70 @@ implements EduActor
     public void setzeSichtbar( boolean sichtbarNeu ) 
     {
         this.sichtbar = sichtbarNeu;
-        this.kreis.setzeSichtbar( sichtbarNeu );
+        super.setzeSichtbar( sichtbarNeu );
     }
     
     
     /**
-     * Verschiebt diesen Kreis um eine Verschiebung - angegeben durch ein "Delta X" und "Delta Y".
+     * Verschiebt diesen Kreis um eine Strecke - angegeben durch ein "Delta X" und "Delta Y".
      * 
-     * @param   deltaX  Der X Anteil dieser Verschiebung. Positive Werte verschieben nach rechts, negative nach links.
+     * @param   deltaX  Der X Anteil (in Bildschirm-Metern) dieser Verschiebung. Positive Werte verschieben nach rechts, negative nach links.
      * 
-     * @param   deltaY  Der Y Anteil dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
+     * @param   deltaY  Der Y Anteil (in Bildschirm-Metern) dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
      */
     public void verschiebenUm( float deltaX , float deltaY ) 
     {
         this.M_x = this.M_x + deltaX;
         this.M_y = this.M_y + deltaY;
-        this.kreis.verschieben( deltaX , deltaY );
+        super.verschieben( deltaX , deltaY );
     }
     
     
     /**
      * Methode beruehrt
      *
-     * @param   r   Ein anderes BILD, RECHTECK, KREIS, DREIECK, ...
+     * @param   ea   Ein anderer EduActor, z.B. FIGUR, RECHTECK, KREIS, DREIECK, ...
      * 
      * @return  true, wenn sich die beiden Objekte ueberschneiden
      */
     public boolean beruehrt( EduActor ea ) 
     {
-        return this.kreis.schneidet( ea.getActor() );
+        return super.schneidet( ea );
     }
     
     
     /**
      * Methode beinhaltetPunkt
      *
-     * @param   x   x-Koordinate des Punkts (Pixel)
-     * @param   y   x-Koordinate des Punkts (Pixel)
+     * @param   x   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * @param   y   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
     public boolean beinhaltetPunkt( float x , float y ) 
     {
-        return this.kreis.beinhaltetPunkt( x , y );
+        return super.beinhaltetPunkt( x , y );
     }
     
     
     /**
      * Nennt die Nummer der Ebene, in der dieses Objekt derzeit gezeichnet wird. 
      * Durch veraendern der Ebenen-Nummer kann man Objekte vor / hinter andere stellen. 
-     * Ebenen mit groesserer Nummer verdecken Ebenen mit kleinerer Nummer.
+     * Ebenen mit groesserer Nummer verdecken Ebenen mit kleinerer Nummer.  
+     * Innerhalb derselben Ebene ueberdecken spaeter erzeugte Objekte die frueher erzeugten.
      *
      * @return  Ebenen-Nummer: -1=Hintergrund ; 0=Standard (ueberdeckt Hintergrund) , 1=weiter vorne (ueberdeckt Hintergrund und Ebene 0) ; ...
      */
-    public int nenneEbene()
+    public int nenneEbenenposition()
     {
-        return this.kreis.getLayer();
+        return super.nenneEbenenposition();
     }
     
     
     /**
-     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Dreiecks zurueck.
+     * Diese Methode gibt die x-Koordinate des Mittelpunkts dieses Kreises (in Bildschrim-Metern) zurueck.
      * 
-     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Dreiecks
+     * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Kreises (in Bildschrim-Metern)
      */
     public float nenneMx()
     {
@@ -221,9 +219,9 @@ implements EduActor
     
     
     /**
-     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Kreises zurueck.
+     * Diese Methode gibt die y-Koordinate des Mittelpunkts dieses Kreises (in Bildschrim-Metern) zurueck.
      * 
-     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Kreises
+     * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Kreises (in Bildschrim-Metern)
      */
     public float nenneMy()
     {
@@ -232,9 +230,9 @@ implements EduActor
     
     
     /**
-     * Diese Methode gibt den Radius dieses Kreises zurueck.
+     * Diese Methode gibt den Radius dieses Kreises (in Bildschrim-Metern) zurueck.
      * 
-     * @return  Der aktuelle Radius dieses Kreises
+     * @return  Der aktuelle Radius dieses Kreises (in Bildschrim-Metern)
      */
     public float nenneRadius()
     {
@@ -265,93 +263,77 @@ implements EduActor
     
     
     /**
-     * Diese Methode prueft, wie weit der Mittelpunkt dieses Rechtecks vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in x-Richtung entfernt ist.
+     * Diese Methode prueft, wie weit der Mittelpunkt dieses Kreises vom Mittelpunkt 
+     * eines anderen EduActors in x-Richtung (in Bildschrim-Metern) entfernt ist.
      * 
-     * @param   grafikObjekt    Das andere Grafik-Objekt
+     * @param   ea    Der andere EduActor
      * 
-     * @return  Abstand (in Pixeln) dieses Rechtecks vom anderen Grafik-Objekt in x-Richtung (>0, wenn dieses Rechteck rechts des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Bildschrim-Metern) dieses Rechtecks vom anderen EduActor in x-Richtung (>0, wenn dieses Rechteck rechts des anderen EduActors liegt)
      */
-    public float berechneAbstandX( EduActor ea )
+    public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.mittelPunkt().x;
+        return this.M_x - ea.nenneMittelpunktX();
     }
     
     
     /**
      * Diese Methode prueft, wie weit der Mittelpunkt dieses Kreises vom Mittelpunkt 
-     * eines anderen Grfik-Objekts in y-Richtung entfernt ist.
+     * eines anderen EduActors in y-Richtung entfernt ist.
      * 
-     * @param   grafikObjekt    Das andere Grafik-Objekt
+     * @param   ea    Der andere EduActor
      * 
-     * @return  Abstand (in Pixeln) dieses Kreises vom anderen Grafik-Objekt in y-Richtung (>0, wenn dieser Kreis unterhalb des anderen Grafik-Objekts liegt)
+     * @return  Abstand (in Pixeln) dieses Kreises vom anderen EduActor in y-Richtung (>0, wenn dieser Kreis unterhalb des anderen EduActors liegt)
      */
-    public float berechneAbstandY( EduActor ea )
+    public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.mittelPunkt().y;
+        return this.M_y - ea.nenneMittelpunktY();
     }
     
     
     /**
-     * Dreht die Grafik um einen Winkel
+     * Dreht die Grafik um einen Winkel (in Grad)
      *
-     * @param   winkelAenderung     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
-     *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
+     * @param   winkelAenderungInGrad     +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     *                                    -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void drehenUm( float winkelAenderung )
+    public void drehenUm( double winkelAenderungInGrad )
     {
-        float x = this.kreis.nenneMx();
-        float y = this.kreis.nenneMy();
-        this.kreis.setzeSichtbar( false );
-        this.kreis.drehen( (float)Math.toRadians(winkelAenderung)  );
-        this.kreis.setzeMittelpunkt( x , y );
-        this.kreis.setzeSichtbar( true );
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
+        super.setzeSichtbar( false );
+        super.drehen( winkelAenderungInGrad );
+        super.setzeMittelpunkt( x , y );
+        super.setzeSichtbar( true );
     }
     
     
     /**
-     * Setzt den Drehwinkel auf eine absoluten neuen Wert
+     * Setzt den Drehwinkel auf einen absoluten neuen Wert (in Grad)
      *
-     * @param   neuerDrehwinkel     der neue Drehwinkel
-     *                              +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
-     *                              -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
+     * @param   neuerDrehwinkelInGrad     der neue Drehwinkel (in Grad)
+     *                                    +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
+     *                                    -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkel )
+    public void setzeDrehwinkel( float neuerDrehwinkelInGrad )
     {
-        this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
+        this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
     }
     
     
     /**
-     * Nennt den Winkel, um den die Grafik gedreht wurde
+     * Nennt den Winkel (in Grad), um den die Grafik gedreht wurde
      *
-     * @return      der Winkel, um den die Grafik gedreht wurde
+     * @return      der Winkel (in Grad), um den die Grafik gedreht wurde
      *              0: wenn nicht gedreht
      *              +: wenn mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *              -: wenn mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public float nenneDrehwinkel()
+    public double nenneDrehwinkel()
     {
-        return (float)Math.toDegrees( this.kreis.nenneWinkel() );
+        return super.nenneDrehwinkel();
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    @Override
-    /**
-     * Methode des Interfaces 'GrafikObjekt'
-     */
-    public ea.actor.Actor getActor() 
-    {
-        return this.kreis;
-    }
-    
-    
     
 }
+    
+    
+ 
