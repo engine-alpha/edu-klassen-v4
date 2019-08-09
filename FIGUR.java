@@ -230,10 +230,12 @@ extends Figur
     
     
     /**
-     * Methode beinhaltetPunkt
+     * Diese Methode prueft, ob ein bestimmter Punkt in dem Objekt enthalten ist. <br />
+     * z.B. interessant zum Auswerten von Maus-Klicks.
      *
-     * @param   x   x-Koordinate des Punkts (Pixel)
-     * @param   y   x-Koordinate des Punkts (Pixel)
+     * @param   x   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * @param   y   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
     public boolean beinhaltetPunkt( double x , double y ) 

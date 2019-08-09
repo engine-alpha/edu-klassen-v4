@@ -148,10 +148,11 @@ extends Text
 
     
     /**
-     * Prueft, ob das Objekt einen bestimmten Punkt beinhaltet. 
+     * Diese Methode prueft, ob ein bestimmter Punkt in dem Objekt enthalten ist. <br />
+     * z.B. interessant zum Auswerten von Maus-Klicks.
      *
-     * @param   x   x-Koordinate des Punkts
-     * @param   y   x-Koordinate des Punkts
+     * @param   x   x-Koordinate des Punkts (in Bildschirm-Metern)
+     * @param   y   x-Koordinate des Punkts (in Bildschirm-Metern)
      * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
