@@ -21,7 +21,7 @@ extends Text
     
     
     /**
-     * TEXT Konstruktor
+     * Konstruktor der Klasse Text.
      *
      * @param   x           x-Koordinate im Fenster
      * @param   y           y-Koordinate im Fenster

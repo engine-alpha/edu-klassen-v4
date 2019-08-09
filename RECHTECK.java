@@ -11,7 +11,7 @@ import ea.edu.Rechteck;
 import ea.edu.EduActor;
 
 /**
- * Diese Klasse stellt ein einfaches Rechteck dar.
+ * Diese Klasse stellt ein einfaches Rechteck dar. 
  */
 public class RECHTECK 
 extends Rechteck

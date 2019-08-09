@@ -29,7 +29,7 @@ extends Figur
     // =====   K o n s t r u k t o r e n   ==============================================================
 
     /**
-     * Konstruktor der Klasse FIGUR <b>fuer ein animiertes GIF</b>. 
+     * Konstruktor der Klasse FIGUR <b>fuer ein animiertes GIF</b>.  
      * Es wird ein erster Zustand angelegt mit der Animation des GIF.
      * 
      * @param   zustandName     Frei waehlbarer Name des Zustands. (Wird zum Umschalten verwendet)

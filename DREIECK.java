@@ -10,7 +10,7 @@ import ea.edu.Dreieck;
 import ea.edu.EduActor;
 
 /**
- * Diese Klasse stellt ein einfaches Dreieck dar.
+ * Diese Klasse stellt ein einfaches Dreieck dar. 
  */
 public class DREIECK
 extends Dreieck

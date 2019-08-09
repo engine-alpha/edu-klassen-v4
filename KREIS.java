@@ -10,7 +10,7 @@ import ea.edu.Kreis;
 import ea.edu.EduActor;
 
 /**
- * Diese Klasse stellt einen einfachen Kreis dar.
+ * Diese Klasse stellt einen einfachen Kreis dar. 
  */
 public class KREIS
 extends Kreis 
