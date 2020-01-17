@@ -13,9 +13,14 @@ import ea.edu.event.*;
  * 
  * @author      Michael Andonie und Mike Ganshorn
  * 
- * @version     4.0 (2019-08-07)
+ * @version     4.1 (2020-01-04)
  * 
- * @changelog   4.0 Umstieg auf EA 4
+ * @changelog   4.1 stoppeTicker, starteTickerNeu, setzeTickerIntervall,  statt tickerStoppen, tickerNeuStarten, tickerIntervallSetzen
+ *                  Bug in warte behoben, warte nicht mehr statisch
+ *                  zufallszahlVonBis ersetzt durch zufallsGanzzahlVonBis, zufallsKommazahlVonBis (nicht statisch)
+ *                  istTasteGedrueckt statt tasteGedrueckt
+ *                  !!! Methode bildAktualisierungReagierbar nutzen statt tick wenn Tickerintervall <0.05 noetig !!!
+ *              4.0 Umstieg auf EA 4
  * 
  *              Ticker startet NICHT mehr automatisch !!!
  *                  
@@ -79,19 +84,19 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      */
     public SPIEL( int fensterBreite, int fensterHoehe, boolean maus ) 
     {
-        setzeFensterGroesse(fensterBreite, fensterHoehe);
+        setzeFensterGroesse( fensterBreite , fensterHoehe );
         //Zaehler fuer Tick, Tack, ...
         zaehler = 0;
         //Maus ggf. aktivieren
         if ( maus ) 
         {
             registriereMausKlickReagierbar( this );
-            registriereMausRadReagierbar(this);
+            registriereMausRadReagierbar( this );
         }
         //Tastatur
         registriereTastenReagierbar( this );
         //Frame-Updates
-        registriereBildAktualisierungReagierbar(this);
+        registriereBildAktualisierungReagierbar( this );
     }
     
     
@@ -157,9 +162,22 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      * 
      * @return      Eine Zufallszahl z mit:   von <= z <= bis
      */
-    public static int zufallszahlVonBis( int von , int bis ) 
+    public int zufallsGanzzahlVonBis( int von , int bis ) 
     {
         return ea.Random.nextInteger( bis - von ) + von;
+    }
+    
+    /**
+     * Gibt eine Komma-Zufallszahl aus.
+     * 
+     * @param von   Die Untergrenze der Zufallszahl (INKLUSIVE)
+     * @param bis   Die Obergrenze der Zufallszahl (INKLUSIVE)
+     * 
+     * @return      Eine Komma-Zufallszahl z mit:   von <= z <= bis
+     */
+    public double zufallsKommazahlVonBis( double von , double bis )
+    {
+        return ( ea.Random.nextFloat() * ( bis - von ) ) + von;
     }
     
     
@@ -172,10 +190,16 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      *
      * @param   sekunden      Die zu wartende Zeit in Sekunden
      */
-    public static void warte( double sekunden )
+    public void warte( double sekunden )
     {
-        try{ Thread.sleep( (int)(1.0f*sekunden/1000) ); }
-        catch ( InterruptedException e ) { e.printStackTrace(); }
+        try
+        { 
+            Thread.sleep( (int)(1.0f*sekunden*1000) ); 
+        }
+        catch ( InterruptedException e ) 
+        { 
+            e.printStackTrace(); 
+        }
     }
     
     
@@ -189,11 +213,11 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      * 
      * @param   sekunden    Die Zeit in Sekunden zwischen zwei Aufrufen der tick()-Methode.
      * 
-     * @see     #tickerNeuStarten(double)
-     * @see     #tickerStoppen(double)
+     * @see     #starteTickerNeu(double)
+     * @see     #stoppeTicker(double)
      * @see     #tick()
      */
-    public void tickerIntervallSetzen( double sekunden ) 
+    public void setzeTickerIntervall( double sekunden ) 
     {
         super.registriereTicker( sekunden , this );
     }
@@ -205,11 +229,11 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      * tick()-Methode kann durch die Methode 
      * tickerNeuStarten(double sekunden) wiedergestartet werden.
      * 
-     * @see     #tickerNeuStarten(double)
-     * @see     #tickerIntervallSetzen(double)
-     * @see     #tickerStoppen(double)
+     * @see     #starteTickerNeu(double)
+     * @see     #setzeTickerIntervall(double)
+     * @see     #stoppeTicker(double)
      */
-    public void tickerStoppen() 
+    public void stoppeTicker() 
     {
         super.entferneTicker( this );
     }
@@ -220,11 +244,11 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      * 
      * @param   sekunden      Die Zeit in Sekunden zwischen zwei Aufrufen der tick()-Methode. 
      * 
-     * @see     #tickerIntervallSetzen(double)
+     * @see     #setzeTickerIntervall(double)
      * @see     #tick()
-     * @see     #tickerStoppen()
+     * @see     #stoppeTicker()
      */
-    public void tickerNeuStarten( double sekunden ) 
+    public void starteTickerNeu( double sekunden ) 
     {
         super.registriereTicker( sekunden , this );
     }
@@ -236,12 +260,14 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
     // =====   M e t h o d e n   z u m   U e b e s c h r e i b e n   ======================================
     
     /**
-     * Wird nach Aufruf von tickerNeuStarten(double) regelmaessig automatisch aufgerufen. So kommt Bewegung ins Spiel! 
+     * Wird nach Aufruf von tickerNeuStarten(double) regelmaessig automatisch aufgerufen. 
+     * So kommt Bewegung ins Spiel! 
      * Tick-Intervall kann angepasst werden. Ticker muss erst gestartet werden!
+     * Tickerintervall kleiner 0.05 vermeiden !!! Dann lieber bildAktualisierungReagieren benutzen.
      * 
-     * @see     #tickerNeuStarten(double)
-     * @see     #tickerStoppen()
-     * @see     #tickerIntervallSetzen(double)
+     * @see     #starteTickerNeu(double)
+     * @see     #stoppeTicker()
+     * @see     #setzeTickerIntervall(double)
      */
     @Override
     public void tick() 
@@ -289,7 +315,7 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
      *                  
      * @return  true, falls die Taste gedrueckt gehalten wird.                 
      */
-    public boolean tasteGedrueckt( int taste )
+    public boolean istTasteGedrueckt( int taste )
     {
         return ea.Game.isKeyPressed( taste );
     }
@@ -337,6 +363,7 @@ implements TastenReagierbar, Ticker, MausKlickReagierbar, MausRadReagierbar, Bil
     
     /**
      * Wird fuer jeden Frame (Bild-Aktualisierung) des Spiels exakt einmal aufgerufen. 
+     * Besser als "schneller" Ticker (deren Tickerintervall kleiner als 0.05 ist)
      * 
      * Extra-Info fuer Nerds: nur in der aktuellen Szene!
      *  --> EDU Games agieren in der Regel nur innerhalb einer Scene ("Hauptszene"). 

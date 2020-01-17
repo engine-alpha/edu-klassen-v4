@@ -19,12 +19,12 @@ extends KREIS
     public static void particleFun(float mx, float my, float sekunden, SPIEL spiel) {
         //Stress-Test:
         for(int i = 0; i < 250; i++) {
-            PARTIKEL p = new PARTIKEL(SPIEL.zufallszahlVonBis(1, 15)/200f, sekunden);
+            PARTIKEL p = new PARTIKEL(ea.Random.nextInteger(1, 15)/200f, sekunden);
             p.setzeMittelpunkt(mx, my);
             ((ea.actor.Circle)p.getActor()).setColor(new java.awt.Color(
-                SPIEL.zufallszahlVonBis(0, 255), 
-                SPIEL.zufallszahlVonBis(0, 255), 
-                SPIEL.zufallszahlVonBis(0, 255)));
+                ea.Random.nextInteger(0, 255), 
+                ea.Random.nextInteger(0, 255), 
+                ea.Random.nextInteger(0, 255)));
             p.wirkeImpuls(
                 (ea.Random.nextFloat()-.5f)*20,
                 (ea.Random.nextFloat()-.5f)*20

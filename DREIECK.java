@@ -1,8 +1,12 @@
 /** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2019-08-06)
+ *  @Version    4.1 (2020-01-09)
  *  
- *  @changelog  4.0 Umstieg auf EA 4
+ *  @changelog  4.1 Mittelpunkt stimmt nun auch, wenn aktiv
+ *                  Konstruktor mit Parametern und setzeEcken funktionieren richtig
+ *                  setzeDichte, nenneDichte und nenneMasse hinzugefuegt
+ *                  diverse kleinere Optimierungen
+ *              4.0 Umstieg auf EA 4
  *  
 */
 
@@ -95,6 +99,7 @@ extends Dreieck
     public DREIECK( double Ax , double Ay , double Bx , double By , double Cx , double Cy ) 
     {
         super( Ax , Ay , Bx , By , Cx , Cy );
+        this.setzeEcken( Ax , Ay , Bx , By , Cx , Cy );
         this.A_x = Ax;
         this.A_y = Ay;
         this.B_x = Bx;
@@ -151,6 +156,8 @@ extends Dreieck
         
         ea.Vector[] points = {new ea.Vector(Ax, Ay), new ea.Vector(Bx, By), new ea.Vector(Cx, Cy)};
         ((ea.actor.Polygon)getActor()).resetPoints(points);
+        
+        super.setzeMittelpunkt( this.M_x , this.M_y );
     }
     
     
@@ -279,7 +286,7 @@ extends Dreieck
      */
     public double nenneMx()
     {
-        return this.M_x;
+        return super.nenneMittelpunktX();
     }
     
     
@@ -290,7 +297,7 @@ extends Dreieck
      */
     public double nenneMy()
     {
-        return this.M_y;
+        return super.nenneMittelpunktY();
     }
     
     
@@ -301,7 +308,7 @@ extends Dreieck
      */
     public String nenneFarbe()
     {
-        return this.farbe;
+        return super.nenneFarbe();
     }
     
     
@@ -310,9 +317,9 @@ extends Dreieck
      * 
      * @return  Die aktuelle Sichtbarkeit dieses Dreiecks
      */
-    public boolean nenneSichtbar()
+    public boolean istSichtbar()
     {
-        return this.sichtbar;
+        return super.istSichtbar();
     }
     
     
@@ -326,7 +333,7 @@ extends Dreieck
      */
     public double berechneAbstandX( EduActor ea )
     {
-        return  this.M_x - ea.nenneMittelpunktX() ;
+        return  super.nenneMittelpunktX() - ea.nenneMittelpunktX() ;
     }
     
     
@@ -340,7 +347,7 @@ extends Dreieck
      */
     public double berechneAbstandY( EduActor ea )
     {
-        return  this.M_y - ea.nenneMittelpunktY();
+        return  super.nenneMittelpunktY() - ea.nenneMittelpunktY();
     }
     
     
@@ -370,7 +377,7 @@ extends Dreieck
      */
     public void setzeDrehwinkel( double neuerDrehwinkelInGrad )
     {
-        this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
+        this.drehenUm( neuerDrehwinkelInGrad - super.nenneDrehwinkel() );
     }
     
     
@@ -385,5 +392,38 @@ extends Dreieck
     public double nenneDrehwinkel()
     {
         return super.nenneDrehwinkel();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle (Flaechen)Dichte des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Dichte in kg/m2
+     */
+    public double nenneDichte()
+    {
+        return super.nenneDichte();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle Masse des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Masse in kg
+     */
+    public double nenneMasse()
+    {
+        return super.nenneMasse();
+    }
+    
+    
+    /**
+     * Setzt die (Flaechen)Dichte und damit die Masse des Koerpers. (Standard: 10kg/m2)
+     *
+     * @param   dichte  Die neue (Flaechen)Dichte in kg/m2
+     */
+    public void setzeDichte( double dichte )
+    {
+        super.setzeDichte( dichte );
     }
 }

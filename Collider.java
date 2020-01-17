@@ -42,7 +42,7 @@ implements ea.edu.event.KollisionsReagierbar {
         //RECHTECK:  R basis_x, basis_y, hoehe , breite
         //Polygon:   P a_x , a_y , b_x , b_y , c_x , c_y , d_x , d_y , ...
         //Mehrere Shapes verbinden mit "&"
-        // nach dem  KEIN Leerzeichen !!!
+        // nach dem & KEIN Leerzeichen !!!
         // vor dem & KEIN Komma !!!
         this.figur.setzeKollisionsformen( "C 2.5f,1.1f,1.1f  &C 5f,1.1f,1.1f  &C 3.8f,4f,3.2f  &C 3.7f,6f,2f" );
         

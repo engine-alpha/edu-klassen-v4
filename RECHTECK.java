@@ -1,9 +1,12 @@
 /** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2019-08-06)
+ *  @Version    4.1 (2020-01-04)
  *  
  *  
- *  @changelog  4.0 Umstieg auf EA 4
+ *  @changelog  4.1 Mittelpunkt stimmt nun auch, wenn aktiv
+ *                  setzeDichte, nenneDichte und nenneMasse hinzugefuegt
+ *                  diverse kleine Optimierungen
+ *              4.0 Umstieg auf EA 4
  *  
 */
 
@@ -109,8 +112,8 @@ extends Rechteck
      */
     public void setzeGroesse( double breite , double hoehe ) 
     {
-        double x = this.nenneMx();
-        double y = this.nenneMy();
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
         //double winkel = this.nenneDrehwinkel();
         //this.rechteck.entfernen();
         //this.breite = breite;
@@ -232,7 +235,7 @@ extends Rechteck
      */
     public double nenneMx()
     {
-        return this.M_x;
+        return super.nenneMittelpunktX();
     }
     
     
@@ -243,7 +246,7 @@ extends Rechteck
      */
     public double nenneMy()
     {
-        return this.M_y;
+        return super.nenneMittelpunktY();
     }
     
     
@@ -276,7 +279,7 @@ extends Rechteck
      */
     public String nenneFarbe()
     {
-        return this.farbe;
+        return super.nenneFarbe();
     }
     
     
@@ -287,7 +290,7 @@ extends Rechteck
      */
     public boolean istSichtbar()
     {
-        return this.sichtbar;
+        return this.istSichtbar();
     }
     
     
@@ -301,7 +304,7 @@ extends Rechteck
      */
     public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.nenneMittelpunktX();
+        return super.nenneMittelpunktX() - ea.nenneMittelpunktX();
     }
     
     
@@ -315,7 +318,7 @@ extends Rechteck
      */
     public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.nenneMittelpunktY();
+        return super.nenneMittelpunktY() - ea.nenneMittelpunktY();
     }
     
     
@@ -343,10 +346,10 @@ extends Rechteck
      */
     public void setzeDrehwinkel( double neuerDrehwinkelInGrad )
     {
-        double x = this.M_x;
-        double y = this.M_y;
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
         this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
-        this.setzeMittelpunkt( x , y );
+        super.setzeMittelpunkt( x , y );
     }
     
     
@@ -361,6 +364,39 @@ extends Rechteck
     public double nenneDrehwinkel()
     {
         return super.nenneDrehwinkel();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle (Flaechen)Dichte des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Dichte in kg/m2
+     */
+    public double nenneDichte()
+    {
+        return super.nenneDichte();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle Masse des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Masse in kg
+     */
+    public double nenneMasse()
+    {
+        return super.nenneMasse();
+    }
+    
+    
+    /**
+     * Setzt die (Flaechen)Dichte und damit die Masse des Koerpers. (Standard: 10kg/m2)
+     *
+     * @param   dichte  Die neue (Flaechen)Dichte in kg/m2
+     */
+    public void setzeDichte( double dichte )
+    {
+        super.setzeDichte( dichte );
     }
     
     

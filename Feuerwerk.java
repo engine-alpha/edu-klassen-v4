@@ -14,15 +14,15 @@ extends SPIEL
     public Feuerwerk() 
     {
         super();
-        super.tickerNeuStarten( 1.2f );
+        super.starteTickerNeu( 1.2f );
     }
     
     @Override
     public void tick() 
     {
-        int x = super.zufallszahlVonBis(-12, 12);
-            int y = super.zufallszahlVonBis(-8, 8);
-            int z = super.zufallszahlVonBis(1200,2000);
+        int x = super.zufallsGanzzahlVonBis(-12, 12);
+            int y = super.zufallsGanzzahlVonBis(-8, 8);
+            int z = super.zufallsGanzzahlVonBis(1200,2000);
             //int dauer = super.zufallszahlVonBis(1000, 10000);
             //int radius = super.zufallszahlVonBis(500, 5000);
             //partikel = new PARTIKEL(radius, dauer);

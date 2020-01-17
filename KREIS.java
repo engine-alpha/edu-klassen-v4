@@ -1,8 +1,12 @@
 /** @author     mike_gans@yahoo.de  and  michael andonie
  * 
- *  @Version    4.0 (2019-08-06)
+ *  @Version    4.1 (2020-01-04)
  *  
- *  @Changelog  4.0 Umstieg auf EA 4
+ *  @Changelog  4.1 float durch double ersetzt
+ *                  Mittelpunkt stimmt nun auch, wenn aktiv
+ *                  setzeDichte, nenneDichte und nenneMasse hinzugefuegt
+ *                  diverse kleinere Optimierungen
+ *              4.0 Umstieg auf EA 4
  *  
 */
 
@@ -34,17 +38,17 @@ extends Kreis
     /**
      * Radius dieses Kreises
      */
-    private float radius;
+    private double radius;
     
     /**
      * x-Koordinate des Mittelpunkts
      */
-    private float M_x;
+    private double M_x;
     
     /**
      * y-Koordinate des Mittelpunkts
      */
-    private float M_y;
+    private double M_y;
     
     
     /**
@@ -61,7 +65,7 @@ extends Kreis
      *
      * @param   rNeu    Der radius des Kreises (in Bildschirm-Metern)
      */
-    public KREIS( float rNeu ) 
+    public KREIS( double rNeu ) 
     {
         super(rNeu);
         //this.kreis = new Kreis( rNeu );
@@ -111,7 +115,7 @@ extends Kreis
      * 
      * @param y   Die Y-Koordinate des Mittelpunktes (in Bildschirm-Metern)
      */
-    public void setzeMittelpunkt( float x , float y ) 
+    public void setzeMittelpunkt( double x , double y ) 
     {
         this.M_x = x;
         this.M_y = y;
@@ -124,16 +128,16 @@ extends Kreis
      * 
      * @param   radius  Der neue Radius (in Bildschirm-Metern)
      */
-    public void setzeRadius( float radius ) 
+    public void setzeRadius( double radius ) 
     {
         //super.entfernen();
-        float x = this.nenneMx();
-        float y = this.nenneMy();
+        double x = this.nenneMx();
+        double y = this.nenneMy();
         //this.radius = radius;
         //this.kreis = new Kreis( radius );
         //super.setzeMittelpunkt( x , y );
         //super.setzeFarbe( this.farbe )*/
-        ((ea.actor.Circle)getActor()).resetRadius(radius);
+        ((ea.actor.Circle)getActor()).resetRadius((float)radius);
         super.setzeMittelpunkt( x , y );
     }
     
@@ -158,7 +162,7 @@ extends Kreis
      * 
      * @param   deltaY  Der Y Anteil (in Bildschirm-Metern) dieser Verschiebung. Positive Werte verschieben nach unten, negative nach oben.
      */
-    public void verschiebenUm( float deltaX , float deltaY ) 
+    public void verschiebenUm( double deltaX , double deltaY ) 
     {
         this.M_x = this.M_x + deltaX;
         this.M_y = this.M_y + deltaY;
@@ -188,7 +192,7 @@ extends Kreis
      * 
      * @return      true, wenn Punkt innerhalb der Grafik
      */
-    public boolean beinhaltetPunkt( float x , float y ) 
+    public boolean beinhaltetPunkt( double x , double y ) 
     {
         return super.beinhaltetPunkt( x , y );
     }
@@ -213,9 +217,9 @@ extends Kreis
      * 
      * @return  Die aktuelle x-Koordinate des Mittelpunktes dieses Kreises (in Bildschrim-Metern)
      */
-    public float nenneMx()
+    public double nenneMx()
     {
-        return this.M_x;
+        return super.nenneMittelpunktX();
     }
     
     
@@ -224,9 +228,9 @@ extends Kreis
      * 
      * @return  Die aktuelle y-Koordinate des Mittelpunktes dieses Kreises (in Bildschrim-Metern)
      */
-    public float nenneMy()
+    public double nenneMy()
     {
-        return this.M_y;
+        return super.nenneMittelpunktY();
     }
     
     
@@ -235,7 +239,7 @@ extends Kreis
      * 
      * @return  Der aktuelle Radius dieses Kreises (in Bildschrim-Metern)
      */
-    public float nenneRadius()
+    public double nenneRadius()
     {
         return this.radius;
     }
@@ -248,7 +252,7 @@ extends Kreis
      */
     public String nenneFarbe()
     {
-        return this.farbe;
+        return super.nenneFarbe();
     }
     
     
@@ -257,9 +261,9 @@ extends Kreis
      * 
      * @return  Die aktuelle Sichtbarkeit dieses Kreises
      */
-    public boolean nenneSichtbar()
+    public boolean istSichtbar()
     {
-        return this.sichtbar;
+        return super.istSichtbar();
     }
     
     
@@ -273,7 +277,7 @@ extends Kreis
      */
     public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.nenneMittelpunktX();
+        return super.nenneMittelpunktX() - ea.nenneMittelpunktX();
     }
     
     
@@ -287,7 +291,7 @@ extends Kreis
      */
     public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.nenneMittelpunktY();
+        return super.nenneMittelpunktY() - ea.nenneMittelpunktY();
     }
     
     
@@ -315,7 +319,7 @@ extends Kreis
      *                                    +: mathematisch positiver Drehsinn (gegen den Uhrzeigersinn)
      *                                    -: mathematisch negativer Drehsinn (im Uhrzeigersinn)
      */
-    public void setzeDrehwinkel( float neuerDrehwinkelInGrad )
+    public void setzeDrehwinkel( double neuerDrehwinkelInGrad )
     {
         this.drehenUm( neuerDrehwinkelInGrad - this.nenneDrehwinkel() );
     }
@@ -332,6 +336,39 @@ extends Kreis
     public double nenneDrehwinkel()
     {
         return super.nenneDrehwinkel();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle (Flaechen)Dichte des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Dichte in kg/m2
+     */
+    public double nenneDichte()
+    {
+        return super.nenneDichte();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle Masse des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Masse in kg
+     */
+    public double nenneMasse()
+    {
+        return super.nenneMasse();
+    }
+    
+    
+    /**
+     * Setzt die (Flaechen)Dichte und damit die Masse des Koerpers. (Standard: 10kg/m2)
+     *
+     * @param   dichte  Die neue (Flaechen)Dichte in kg/m2
+     */
+    public void setzeDichte( double dichte )
+    {
+        super.setzeDichte( dichte );
     }
     
 }

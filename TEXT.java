@@ -6,9 +6,13 @@ import ea.*;
  * 
  * @author      mike_gans@yahoo.de  and  michael andonie
  * 
- * @version     4.0 (2018-08-06)
+ * @version     4.1 (2020-01-04)
  * 
- * @changelog   4.0 Umstieg auf EA 4
+ * @changelog   4.1 SetzeInhalt stellt Ganzzahlen nun als solche dar
+ *                  nenneInhaltGanzzahl, nenneInhaltKommazahl, nenneInhaltText hinzugefuegt
+ *                  setzeDichte, nenneDichte und nenneMasse hinzugefuegt
+ *                  diverse kleinere Optimierungen
+ *              4.0 Umstieg auf EA 4
  * 
  *              
  */
@@ -18,6 +22,8 @@ extends Text
     private double M_x;
     
     private double M_y;
+    
+    private String inhalt;
     
     
     /**
@@ -34,6 +40,7 @@ extends Text
         this.M_x = x;
         this.M_y = y;
         super.setzeMittelpunkt( x , y );
+        this.inhalt = text;
     }
     
     
@@ -61,6 +68,7 @@ extends Text
      */
     public void setzeInhalt( String text )
     {
+        this.inhalt = text;
         super.setzeInhalt( text );
     }
     
@@ -72,7 +80,41 @@ extends Text
      */
     public void setzeInhalt( double zahl )
     {
+        this.inhalt = ""+zahl;
         super.setzeInhalt( "" + zahl );
+    }
+    
+    
+    /**
+     * Gibt den Inhalt des Textfeldes als ganze Zahl zurueck - falls moeglich! 
+     *
+     * @return  ganze Zahl aus dem Textfeld
+     */
+    public int nenneInhaltGanzzahl()
+    {
+        return Integer.parseInt(this.inhalt);
+    }
+    
+    
+    /**
+     * Gibt den Inhalt des Textfeldes als Kommaahl zurueck - falls moeglich! 
+     *
+     * @return  Kommazahl aus dem Textfeld
+     */
+    public double nenneInhaltKommazahl()
+    {
+        return Double.parseDouble(this.inhalt);
+    }
+    
+    
+    /**
+     * Gibt den Inhalt des Textfeldes als Text zurueck. (geht immer) 
+     *
+     * @return  Text aus dem Textfeld
+     */
+    public String nenneInhaltText()
+    {
+        return this.inhalt;
     }
     
     
@@ -196,7 +238,7 @@ extends Text
      */
     public double nenneMx() 
     {
-        return this.M_x;
+        return super.nenneMittelpunktX();
     }
     
     
@@ -207,7 +249,7 @@ extends Text
      */
     public double nenneMy() 
     {
-        return this.M_y;
+        return super.nenneMittelpunktY();
     }
     
     
@@ -227,7 +269,7 @@ extends Text
      *
      * @return  true, wenn die Grafik gerade sichbar ist, sonst false
      */
-    public boolean nenneSichtbar()
+    public boolean istSichtbar()
     {
         return super.istSichtbar();
     }
@@ -245,7 +287,7 @@ extends Text
         double y = this.nenneMy();
         super.setzeSichtbar( false );
         super.drehen( winkelAenderung );
-        this.setzeMittelpunkt( x , y );
+        super.setzeMittelpunkt( x , y );
         super.setzeSichtbar( true );
     }
     
@@ -288,7 +330,7 @@ extends Text
      */
     public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.nenneMittelpunktX();
+        return super.nenneMittelpunktX() - ea.nenneMittelpunktX();
     }
     
     
@@ -303,8 +345,39 @@ extends Text
      */
     public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.nenneMittelpunktY();
+        return super.nenneMittelpunktY() - ea.nenneMittelpunktY();
     }
     
     
+    /**
+     * Gibt die aktuelle (Flaechen)Dichte des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Dichte in kg/m2
+     */
+    public double nenneDichte()
+    {
+        return super.nenneDichte();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle Masse des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Masse in kg
+     */
+    public double nenneMasse()
+    {
+        return super.nenneMasse();
+    }
+    
+    
+    /**
+     * Setzt die (Flaechen)Dichte und damit die Masse des Koerpers. (Standard: 10kg/m2)
+     *
+     * @param   dichte  Die neue (Flaechen)Dichte in kg/m2
+     */
+    public void setzeDichte( double dichte )
+    {
+        super.setzeDichte( dichte );
+    }
 }

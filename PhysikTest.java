@@ -24,7 +24,7 @@ extends SPIEL
         this.ding.setzeFarbe("blau");
         this.ding.setzeElastizitaet(0.8);
         this.ding.setzeReibung(0.2);
-        this.ding.drehenUm(SPIEL.zufallszahlVonBis(0, 90));
+        this.ding.drehenUm(ea.Random.nextInteger(0, 90));
         this.ding.setzeRotationBlockiert(false);
         this.ding.macheAktiv();
     }
@@ -34,7 +34,7 @@ extends SPIEL
     {
         this.ding.setzeMittelpunkt(0,0);
         this.ding.setzeGeschwindigkeit(0,0);
-        this.ding.drehenUm(SPIEL.zufallszahlVonBis(0, 90));
+        this.ding.drehenUm(ea.Random.nextInteger(0, 90));
         this.ding.setzeWinkelgeschwindigkeit(0);
     }
 }

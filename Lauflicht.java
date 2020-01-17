@@ -29,7 +29,7 @@ extends SPIEL
         for ( int i=0 ; i<8 ; i++ )
         {
             lichter[i].setzeFarbe("gelb");
-            SPIEL.warte( 0.5f );
+            super.warte( 0.5 );
             lichter[i].setzeFarbe("dunkelgrau");
         }
     }
@@ -39,7 +39,7 @@ extends SPIEL
         for ( int i=0 ; i<xmal ; i++ )
         {
             lichter[i].setzeFarbe("gelb");
-            SPIEL.warte( 0.5f );
+            super.warte( 0.5 );
             lichter[i].setzeFarbe("dunkelgrau");
         }
     }

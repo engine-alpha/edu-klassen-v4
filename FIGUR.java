@@ -11,9 +11,13 @@ import ea.actor.StatefulAnimation;
  * 
  * @author      mike_gans@yahoo.de  and  michael andonie
  * 
- * @version     4.0 (2019-08-06)
+ * @version     4.1 (2020-01-04)
  *                  
- * @changelog   4.0 Umstieg auf EA 4
+ * @changelog   4.1 neuen Konstruktor Figur(String) fuer einfache Bilder
+ *                  setzeDichte, nenneDichte und nenneMasse hinzugefuegt
+ *                  setzeAnimationPausiert(boolean) hinzugefuegt
+ *                  diverse kleine Bugs behoben
+ *              4.0 Umstieg auf EA 4
  *                  Nicht vergleichbar mit alter Klasse FIGUR (kein Figuren-Editor mehr).
  *                  Vereint die alten Klassen FIGUR, BILD und WECHSELBILD.
  *                  Kann ein Bild, mehrere Bilder, Sprite-Sheets und animierte GIFs einlesen.
@@ -58,6 +62,17 @@ extends Figur
         public FIGUR( String zustandName , String spritesheetPfad , int x , int y )
     {
         super( zustandName , spritesheetPfad , x , y );
+    }
+    
+    
+    /**
+     * Konstruktor der Klasse FIGUR fuer ein einfaches Bild.
+     *
+     * @param   bildName    Datei-Pfad zu einem Bild
+     */
+    public FIGUR( String bildName )
+    {
+        this( "standard" , bildName , 1 , 1 );
     }
     
     
@@ -164,7 +179,7 @@ extends Figur
      */
     public double nenneMx()
     {
-        return this.M_x;
+        return super.nenneMittelpunktX();
     }
     
     
@@ -175,7 +190,7 @@ extends Figur
      */
     public double nenneMy()
     {
-        return this.M_y;
+        return super.nenneMittelpunktY();
     }
     
     
@@ -195,7 +210,7 @@ extends Figur
      *
      * @return  'true' wenn sichtbar, 'false' wenn unsichtbar
      */
-    public boolean nenneSichtbar()
+    public boolean istSichtbar()
     {
         return super.istSichtbar();
     }
@@ -254,7 +269,7 @@ extends Figur
      */
     public double berechneAbstandX( EduActor ea )
     {
-        return this.M_x - ea.nenneMittelpunktX();
+        return super.nenneMittelpunktX() - ea.nenneMittelpunktX();
     }
     
     
@@ -268,7 +283,7 @@ extends Figur
      */
     public double berechneAbstandY( EduActor ea )
     {
-        return this.M_y - ea.nenneMittelpunktY();
+        return super.nenneMittelpunktY() - ea.nenneMittelpunktY();
     }
     
     
@@ -280,12 +295,12 @@ extends Figur
      */
     public void drehenUm( double winkelAenderung )
     {
-        double x = this.nenneMx();
-        double y = this.nenneMy();
-        this.setzeSichtbar( false );
-        this.drehen( winkelAenderung );
-        this.setzeMittelpunkt( x , y );
-        this.setzeSichtbar( true );
+        double x = super.nenneMittelpunktX();
+        double y = super.nenneMittelpunktY();
+        super.setzeSichtbar( false );
+        super.drehen( winkelAenderung );
+        super.setzeMittelpunkt( x , y );
+        super.setzeSichtbar( true );
     }
     
     
@@ -298,7 +313,7 @@ extends Figur
      */
     public void setzeDrehwinkel( double neuerDrehwinkel )
     {
-        this.drehenUm( neuerDrehwinkel - this.nenneDrehwinkel() );
+        this.drehenUm( neuerDrehwinkel - super.nenneDrehwinkel() );
     }
     
     
@@ -392,7 +407,7 @@ extends Figur
      */
     public void fuegeZustandVonPraefixHinzu( String zustandsName , String verzeichnis , String praefix )
     {
-        this.fuegeZustandVonPraefixHinzu( zustandsName , verzeichnis , praefix );
+        super.fuegeZustandVonPraefixHinzu( zustandsName , verzeichnis , praefix );
     }
     
     
@@ -421,5 +436,49 @@ extends Figur
     public void setzeAutomatischenUebergang( String zustandVon , String zustandNach )
     {
         super.setzeAutomatischenUebergang( zustandVon , zustandNach );
+    }
+    
+    
+    /**
+     * Gibt die aktuelle (Flaechen)Dichte des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Dichte in kg/m2
+     */
+    public double nenneDichte()
+    {
+        return super.nenneDichte();
+    }
+    
+    
+    /**
+     * Gibt die aktuelle Masse des Koerpers zurueck. (Standard: 10kg/m2)
+     *
+     * @return  Die aktuelle Masse in kg
+     */
+    public double nenneMasse()
+    {
+        return super.nenneMasse();
+    }
+    
+    
+    /**
+     * Setzt die (Flaechen)Dichte und damit die Masse des Koerpers. (Standard: 10kg/m2)
+     *
+     * @param   dichte  Die neue (Flaechen)Dichte in kg/m2
+     */
+    public void setzeDichte( double dichte )
+    {
+        super.setzeDichte( dichte );
+    }
+    
+    
+    /**
+     * Pausiert die Animation der Figur oder setzt sie wieder fort.
+     *
+     * @param   pausiert    true = Animation pausieren ; false = fortsetzen
+     */
+    public void setzeAnimationPausiert( boolean pausiert )
+    {
+        super.setzeAnimationPausiert( pausiert );
     }
 }
