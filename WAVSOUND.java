@@ -41,7 +41,6 @@ public class WAVSOUND{
                 AudioInputStream ais = AudioSystem.getAudioInputStream(url);
                 clip.open(ais);
                 clip.start();
-                Thread.sleep(1000);
             } 
             catch (Exception e){
                 e.printStackTrace();
@@ -61,7 +60,6 @@ public class WAVSOUND{
                 clip.open(ais);
                 clip.loop(Clip.LOOP_CONTINUOUSLY);
                 clip.start();
-                Thread.sleep(1000);
             } 
             catch (Exception e){
                 e.printStackTrace();
