@@ -25,7 +25,7 @@ public class WAVSOUND{
      * Erstellt ein "MIDISOUND"-Objekt, welches aufgerufen werden kann, um ".wav"-Dateien abzuspielen.
      * 
      * @param nLink Einen Link einfügen, der zu einer <b>".wav"-Datei</b> führt.
-     *              Es genügt eine ".wav"-Datei auf eine Cloud (z.B.: terabox.com) hochzuladen und diese zu teilen und den <b>exakten</b> Download-Link zu verwenden.
+     *              Es genügt eine ".wav"-Datei auf eine Cloud (z.B.: terabox.com) hochzuladen (besser wäre ein eigener Server) und diese zu teilen und den <b>exakten</b> Download-Link zu verwenden.
      */
     public WAVSOUND(String nLink){
         link = nLink;
