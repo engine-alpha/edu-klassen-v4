@@ -28,7 +28,7 @@ public class WAVSOUND{
     /** 
      * Erstellt ein "WAVSOUND"-Objekt, welches aufgerufen werden kann, um ".wav"-Dateien abzuspielen.
      * 
-     * @param nLink Hier wird der relative Pfad zur Datei (beginnend im Projekt-Ordner) angegeben.
+     * @param wavfile Hier wird der relative Pfad zur Datei (beginnend im Projekt-Ordner) angegeben.
      */
     public WAVSOUND(String wavfile){
         file = new File(wavfile);
