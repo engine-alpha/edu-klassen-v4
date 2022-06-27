@@ -149,6 +149,5 @@ public class MIDISOUND extends Spiel implements Ticker{
             midiWiedergabeStoppen();
             midiWiedergabeStarten();
         }
-        System.out.println(position/1000/1000 + " " + length/1000/1000);
     }
 }
