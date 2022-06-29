@@ -51,6 +51,7 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
         if(fileExt == "wav" || fileExt == "midi"){}
         else{
             System.out.println("Der Dateityp: ." + fileExt + " wird nicht unterstützt.");
+            System.out.println("Bitte versuche es mit einer unterstützten Datei nochmal (.midi / .wav).");
             System.exit(0);
         }
     }
@@ -232,6 +233,8 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
         if(fileExt == "wav" || fileExt == "midi"){}
         else{
             System.out.println("Der Dateityp: ." + fileExt + " wird nicht unterstützt.");
+            System.out.println("Bitte versuche es mit einer unterstützten Datei nochmal (.midi / .wav).");
+            System.out.println("Die vorherige Datei wird beibehalten.");
             file = temp;
             fileExt = tempExt;
         }
