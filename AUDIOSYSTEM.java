@@ -38,10 +38,15 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
     private File file;
     private char running;
     private String fileExt;
+    /**
+     * Konstruktor der Klasse AUDIOSYSTEM
+     * 
+     * @param   dateiName                   relativer Dateipfad der zu ausführenden Datei (ohne Erweiterung) [Bsp.: "test"; "../ordner/test"; "/ordner/test"]
+     * @param   dateiNamensErweiterung      die Dateinamenserweiterung angeben (ohne Punkt) [Bsp.: "wav"; "midi"]
+     */
     public AUDIOSYSTEM(String dateiName, String dateiNamensErweiterung){
         file = new File(dateiName + "." + dateiNamensErweiterung);
         fileExt = dateiNamensErweiterung;
-        position = 0;
         running = 's';
         if(fileExt == "wav" || fileExt == "midi"){}
         else{
@@ -49,7 +54,11 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             System.exit(0);
         }
     }
+    /**
+     * Lässt die Datei einmal abspielen
+     */
     public void wiedergabeStarten(){
+        position = 0;
         wiedergabeStoppen();
         if(fileExt == "midi"){
             if(running == 's'){
@@ -85,7 +94,11 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             }
         }
     }
+    /**
+     * Lässt die Datei unendlich wiederholend abspielen
+     */
     public void loopWiedergabeStarten(){
+        position = 0;
         wiedergabeStoppen();
         if(fileExt == "midi"){
             if(running == 's'){
@@ -123,6 +136,9 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             }
         }
     }
+    /**
+     * Stoppt die Wiedergabe der Datei völlig
+     */
     public void wiedergabeStoppen(){
         if(fileExt == "midi"){
             if(running == 'p' || running == 'l' || running == 'o'){
@@ -139,6 +155,9 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             }
         }
     }
+    /**
+     * Pausiert die Wiedergabe der Datei
+     */
     public void wiedergabePausieren(){
         if(fileExt == "midi"){
             if(running == 'p'){
@@ -167,6 +186,9 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             }
         }
     }
+    /**
+     * Setzt die Wiedergabe der Datei fort
+     */
     public void wiedergabeFortsetzen(){
         if(fileExt == "midi"){
             if(running == 'h'){
@@ -195,6 +217,11 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             }
         }
     }
+    /**
+     * Setzt eine neue Datei für die Wiedergabe, kann auch während den Abspielen 
+     * einer anderen Datei geändert werden und die andere Datei würde vorerst 
+     * eine Änderungen aufweisen.
+     */
     public void setzeNeuenDateiNamen(String dateiName, String dateiNamensErweiterung){
         String tempExt;
         tempExt = fileExt;
@@ -202,7 +229,6 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
         temp = file;
         file = new File(dateiName + "." + dateiNamensErweiterung);
         fileExt = dateiNamensErweiterung;
-        position = 0;
         if(fileExt == "wav" || fileExt == "midi"){}
         else{
             System.out.println("Der Dateityp: ." + fileExt + " wird nicht unterstützt.");
@@ -210,7 +236,19 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
             fileExt = tempExt;
         }
     }
-    private void setzeTickerIntervall( double sekunden ) {
+    /**
+     * Gibt den aktuellen Status aus
+     * 
+     * @return      <i>s</i> - Musik ist gerade gestoppt <br>
+     *              <i>p</i> - Musik wird gerade als eine normale Wiederabe abgespielt <br>
+     *              <i>l</i> - Musik wird gerade als eine loop Wiedergabe abgespielt <br>
+     *              <i>h</i> - Musik ist gerade während einer normalen Wiederabe pausiert <br>
+     *              <i>o</i> - Musik ist gerade während einer loop Wiedergabe pausiert <br>
+     */
+    public char gebeStatusAus(){
+        return(running);
+    }
+    public void setzeTickerIntervall( double sekunden ) {
         super.registriereTicker( sekunden , this );
     }
     public void stoppeTicker(){
@@ -220,6 +258,9 @@ public class AUDIOSYSTEM extends Spiel implements Ticker{
         super.registriereTicker( sekunden , this );
     }
     @Override
+    /**
+     * Hier wird der Loop verarbeitet
+     */
     public void tick(){
         if(fileExt == "midi"){
             position = sequencer.getMicrosecondPosition();
